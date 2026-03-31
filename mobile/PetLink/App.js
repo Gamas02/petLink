@@ -137,7 +137,10 @@ function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={[styles.button, (!usuario || !senha) && styles.buttonDisabled]}
           disabled={!usuario || !senha}
-          onPress={handleLogin}
+          onPress={() =>{
+            handleLogin();
+            navigation.navigate('App')
+          }}
         >
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
@@ -155,7 +158,7 @@ function LoginScreen({ navigation }) {
 }
 
 /* ───────────── REGISTER ───────────── */
-function RegisterScreen() {
+function RegisterScreen({navigation}) {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -250,7 +253,11 @@ function RegisterScreen() {
             (!usuario || !senha || !confirmarSenha) && styles.buttonDisabled
           ]}
           disabled={!usuario || !senha || !confirmarSenha}
-          onPress={handleRegister}
+          onPress={() =>{
+            handleRegister();
+            navigation.navigate('Login');
+          }} 
+          
         >
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
@@ -268,6 +275,23 @@ function RegisterScreen() {
   );
 }
 
+function AppScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#F4A261" />
+
+      <TopWave />
+      <BottomWave />
+
+      <View style={styles.content}>
+        <View style={styles.buttonGroup}>
+          <Text>PetZoo</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 /* ───────────── APP ───────────── */
 export default function App() {
   return (
@@ -276,6 +300,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Registrar-se" component={RegisterScreen} />
+        <Stack.Screen name="App" component={AppScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
