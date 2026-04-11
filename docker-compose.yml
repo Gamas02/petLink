@@ -5,21 +5,18 @@ services:
     container_name: banco_de_dados
     restart: unless-stopped
 
-    env_file:
-      - .env
-
-    environment:                          # era "enviroment" (typo)
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_DATABASE: petcare_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: apppass123
 
     ports:
       - "3306:3306"
 
-    volumes:                              # era "volume" (singular)
+    volumes:                              
       - mysql_data:/var/lib/mysql
-      - ./database:/docker-entrypoint-initdb.d  # era ./mysql/init
+      - ./database:/docker-entrypoint-initdb.d 
 
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD || exit 1"]
@@ -36,13 +33,6 @@ services:
     env_file:
       - .env
 
-    environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-
     ports:
       - "5000:5000"
 
@@ -56,7 +46,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "5005:5005"   # API REST do Rasa
+      - "5005:5005"  
 
     volumes:
       - ./chatbot:/app
