@@ -12,6 +12,10 @@ import {
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+
+import { loginStyles as styles } from '../style/styles';
+import { TopWave, BottomWave } from '../components/waves';
+
 export default function LoginScreen({ navigation }) {
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');

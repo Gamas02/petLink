@@ -1,31 +1,22 @@
-import 'react-native-gesture-handler';
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  StatusBar,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import React from 'react';
+import { View, Text, ScrollView, StatusBar } from 'react-native';
+
+import { appScreenStyles as styles } from '../style/styles';
+import { InstitutionCard, institutions } from '../components/cards';
 
 export default function AppScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#F4A261" />
             <View style={styles.appBack}>
-                <Text style={appStyles.sectionLabel}>PetLink</Text>
+                <Text style={styles.sectionLabel}>PetLink</Text>
             </View>
 
             <ScrollView
-                style={appStyles.scroll}
-                contentContainerStyle={appStyles.scrollContent}
+                style={styles.scroll}
+                contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-
                 {institutions.map((item) => (
                     <InstitutionCard key={item.id} item={item} />
                 ))}

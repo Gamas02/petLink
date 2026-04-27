@@ -1,16 +1,19 @@
 import 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  StatusBar,
-  Dimensions,
-  ScrollView,
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    StatusBar,
+    Dimensions,
+    ScrollView,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+
+import { homeStyles as styles } from '../style/styles';
+import { TopWave, BottomWave } from '../components/waves';
 
 export default function HomeScreen({ navigation }) {
     return (

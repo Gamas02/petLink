@@ -1,16 +1,19 @@
 import 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  StatusBar,
-  Dimensions,
-  ScrollView,   
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    StatusBar,
+    Dimensions,
+    ScrollView,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+
+import { registerStyles as styles } from '../style/styles';
+import { TopWave, BottomWave } from '../components/waves';
 
 export default function RegisterScreen({ navigation }) {
     const [usuario, setUsuario] = useState('');
@@ -90,6 +93,10 @@ export default function RegisterScreen({ navigation }) {
                     onPress={() => { handleRegister(); navigation.navigate('Login'); }}
                 >
                     <Text style={styles.buttonText}>Cadastrar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.signup}>Já tem conta? Login</Text>
                 </TouchableOpacity>
 
                 <Text style={[
