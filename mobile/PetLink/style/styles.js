@@ -129,7 +129,7 @@ export const appScreenStyles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     appBack: {
-        backgroundColor: '#fa810fd7',
+        backgroundColor: '#f4A261',
         width: '100%',
         padding: 20,
         paddingTop: 30,
