@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
   cidade VARCHAR(100) NULL,
   estado CHAR(2) NULL,
   data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  is_admin TINYINT(1) NOT NULL DEFAULT 0,
   ativo TINYINT(1) NOT NULL DEFAULT 1,
 
   PRIMARY KEY (id),
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Empresa_Ong (
   telefone VARCHAR(20) NULL,
   cnpj VARCHAR(18) NOT NULL,
   tipo ENUM('ong', 'canil') NOT NULL,
-  codigo_registro VARCHAR(50)       NULL,
+  codigo_registro VARCHAR(50) NULL,
   cidade VARCHAR(100) NULL,
   estado CHAR(2) NULL,
   data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
