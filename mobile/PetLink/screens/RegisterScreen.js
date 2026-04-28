@@ -35,6 +35,10 @@ export default function RegisterScreen({ navigation }) {
             setMensagem("As senhas não coincidem ❌");
             return;
         }
+        if (estado.legth > 2){
+            setMensagem("Abrevie para sigla")
+            return;
+        }
         try {
             setMensagem("Enviando...");
             const response = await fetch("http://SEU_BACKEND/register", {
