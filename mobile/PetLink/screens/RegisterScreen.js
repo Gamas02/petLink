@@ -12,6 +12,10 @@ import {
 import { TopWave, BottomWave } from '../components/waves';
 
 export default function RegisterScreen({ navigation }) {
+
+    const [mostrarSenha, setMostrarSenha] = useState(false);
+    const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
+
     const [usuario, setUsuario] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -22,39 +26,81 @@ export default function RegisterScreen({ navigation }) {
     const [cidade, setCidade] = useState('');
     const [mensagem, setMensagem] = useState('');
 
+    const mascaraCPF = (t) => {
+        return t
+            .replace(/\D/g, '')
+            .slice(0, 11)
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    };
+
+    const mascaraTelefone = (t) => {
+        return t
+            .replace(/\D/g, '')
+            .slice(0, 11)
+            .replace(/(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+    };
+
+    const emailValido = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
     const handleRegister = async () => {
-        if (!usuario.trim() || !senha || !confirmarSenha) {
-            setMensagem("Preencha todos os campos ⚠️");
+
+
+        if (!emailValido(email)) {
+            setMensagem("E-mail inválido");
             return;
         }
+
+        if (cpf.replace(/\D/g, '').length !== 11) {
+            setMensagem("CPF inválido");
+            return;
+        }
+
         if (senha.length < 6) {
-            setMensagem("Senha deve ter no mínimo 6 caracteres 🔒");
+            setMensagem("Senha deve ter no mínimo 6 caracteres");
             return;
         }
         if (senha !== confirmarSenha) {
-            setMensagem("As senhas não coincidem ❌");
+            setMensagem("As senhas não coincidem");
             return;
         }
-        if (estado.legth > 2){
-            setMensagem("Abrevie para sigla")
+        if (estado.length !== 2) {
+            setMensagem('Esse não é um estado válido!')
             return;
         }
+
         try {
             setMensagem("Enviando...");
             const response = await fetch("http://SEU_BACKEND/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ usuario: usuario.trim(), email, cpf, telefone, estado, cidade, senha }),
+                body: JSON.stringify({
+                    usuario: usuario.trim(),
+                    email,
+                    cpf: cpf.replace(/\D/g, ''),
+                    telefone: telefone.replace(/\D/g, ''),
+                    estado,
+                    cidade: cidade.trim(),
+                    senha,
+                }),
             });
             const data = await response.json();
             if (response.ok) {
                 setMensagem("Cadastro realizado com sucesso ✅");
+                setTimeout(() => {
+                    navigation.navigate('Login');
+                }, 1500); 
             } else {
                 setMensagem(data.message || "Erro ao cadastrar ❌");
             }
         } catch (error) {
             setMensagem("Erro de conexão com servidor 🌐");
         }
+
     };
 
     return (
@@ -82,32 +128,41 @@ export default function RegisterScreen({ navigation }) {
                     <Text style={s.label}>E-mail</Text>
                     <TextInput
                         style={s.input}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoCorrect={false}
                         placeholder="Digite seu e-mail"
                         placeholderTextColor="#bbb"
                         value={email}
                         onChangeText={(t) => { setEmail(t.trimStart()); setMensagem(""); }}
                     />
 
-                    <Text style={s.label}>CPF</Text>
-                    <TextInput
-                        style={s.input}
-                        placeholder="000.000.000-00"
-                        placeholderTextColor="#bbb"
-                        value={cpf}
-                        onChangeText={(t) => { setCpf(t.trimStart()); setMensagem(""); }}
-                    />
-
-                    <Text style={s.label}>Telefone</Text>
-                    <TextInput
-                        style={s.input}
-                        placeholder="(00) 00000-0000"
-                        placeholderTextColor="#bbb"
-                        value={telefone}
-                        keyboardType="phone-pad"
-                        onChangeText={(t) => { setTelefone(t.trimStart()); setMensagem(""); }}
-                    />
+                    <View style={s.row}>
+                        <View style={s.colHalf}>
+                            <Text style={s.label}>CPF</Text>
+                            <TextInput
+                                style={s.input}
+                                placeholder="000.000.000-00"
+                                placeholderTextColor="#bbb"
+                                onChangeText={(t) => { setCpf(mascaraCPF(t)); setMensagem(""); }}
+                                value={cpf}
+                            />
+                        </View>
+                        <View style={s.colHalf}>
+                            <Text style={s.label}>Telefone</Text>
+                            <TextInput
+                                style={s.input}
+                                placeholder="(00) 00000-0000"
+                                placeholderTextColor="#bbb"
+                                keyboardType="phone-pad"
+                                onChangeText={(t) => { setTelefone(mascaraTelefone(t)); setMensagem(""); }}
+                                value={telefone}
+                            />
+                        </View>
+                    </View>
 
                     <View style={s.row}>
+
                         <View style={s.colEstado}>
                             <Text style={s.label}>Estado</Text>
                             <TextInput
@@ -116,9 +171,13 @@ export default function RegisterScreen({ navigation }) {
                                 placeholderTextColor="#bbb"
                                 value={estado}
                                 maxLength={2}
-                                onChangeText={(t) => { setEstado(t.toUpperCase()); setMensagem(""); }}
+                                onChangeText={(t) => {
+                                    setEstado(t.toUpperCase().replace(/[^A-Z]/g, ''));
+                                    setMensagem("");
+                                }}
                             />
                         </View>
+
                         <View style={s.colCidade}>
                             <Text style={s.label}>Cidade</Text>
                             <TextInput
@@ -132,24 +191,40 @@ export default function RegisterScreen({ navigation }) {
                     </View>
 
                     <Text style={s.label}>Senha</Text>
-                    <TextInput
-                        style={s.input}
-                        placeholder="Mínimo 6 caracteres"
-                        placeholderTextColor="#bbb"
-                        secureTextEntry
-                        value={senha}
-                        onChangeText={(t) => { setSenha(t); setMensagem(""); }}
-                    />
+                    <View style={s.inputWrap}>
+
+                        <TextInput
+                            style={s.input}
+                            placeholder="Mínimo 6 caracteres"
+                            placeholderTextColor="#bbb"
+                            secureTextEntry={!mostrarSenha}
+                            value={senha}
+                            onChangeText={(t) => { setSenha(t); setMensagem(""); }}
+                        />
+
+                        <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarSenha(v => !v)}>
+                            <Text>{mostrarSenha ? '✕' : '◉'}</Text>
+                        </TouchableOpacity>
+
+                    </View>
 
                     <Text style={s.label}>Confirmar Senha</Text>
-                    <TextInput
-                        style={s.input}
-                        placeholder="Repita a senha"
-                        placeholderTextColor="#bbb"
-                        secureTextEntry
-                        value={confirmarSenha}
-                        onChangeText={(t) => { setConfirmarSenha(t); setMensagem(""); }}
-                    />
+                    <View style={s.inputWrap}>
+
+                        <TextInput
+                            style={s.input}
+                            placeholder="Repita a senha"
+                            placeholderTextColor="#bbb"
+                            secureTextEntry={!mostrarConfirmar}
+                            value={confirmarSenha}
+                            onChangeText={(t) => { setConfirmarSenha(t); setMensagem(""); }}
+                        />
+
+                        <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarConfirmar(v => !v)}>
+                            <Text>{mostrarConfirmar ? '✕' : '◉'}</Text>
+                        </TouchableOpacity>
+
+                    </View>
 
                     {mensagem ? (
                         <Text style={[s.msg, mensagem.includes("sucesso") ? s.success : s.error]}>
@@ -159,7 +234,7 @@ export default function RegisterScreen({ navigation }) {
 
                     <TouchableOpacity
                         style={[s.button, (!usuario || !email || !cpf || !telefone || !estado || !cidade || !senha || !confirmarSenha) && s.buttonDisabled]}
-                        disabled={!usuario || !senha || !confirmarSenha}
+                        disabled={!usuario || !email || !cpf || !telefone || !estado || !cidade || !senha || !confirmarSenha}
                         onPress={handleRegister}
                     >
                         <Text style={s.buttonText}>Cadastrar</Text>
@@ -182,13 +257,13 @@ const s = StyleSheet.create({
     scroll: {
         flexGrow: 1,
         justifyContent: 'center',
-        paddingVertical: 100,
-        paddingHorizontal: 24,
+        paddingVertical: 80,
+        paddingHorizontal: 20,
     },
     card: {
         backgroundColor: '#fff',
-        borderRadius: 24,
-        padding: 24,
+        borderRadius: 20,
+        padding: 18,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
@@ -196,18 +271,18 @@ const s = StyleSheet.create({
         elevation: 6,
     },
     title: {
-        fontSize: 26,
+        fontSize: 20,
         fontWeight: '900',
         textAlign: 'center',
         color: '#1a1a1a',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     label: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: '700',
         color: '#888',
-        marginBottom: 4,
         marginTop: 8,
+        marginBottom: 3,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
@@ -215,27 +290,57 @@ const s = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: '#ECECEC',
         borderRadius: 12,
-        padding: 12,
-        fontSize: 14,
+        padding: 8,           // era 12
+        fontSize: 13,         // era 14
         color: '#1a1a1a',
         backgroundColor: '#FAFAFA',
     },
     row: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 10,
+    },
+    colHalf: {
+        flex: 1,              // novo — CPF e Telefone lado a lado
     },
     colEstado: {
-        width: 80,
+        width: 72,            // era 80
     },
     colCidade: {
         flex: 1,
     },
+    inputWrap: {
+        position: 'relative', // novo — para o botão de olho
+    },
+    eyeBtn: {
+        position: 'absolute',
+        right: 10,
+        top: 8,
+    },
+    divider: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 10,
+        marginBottom: 0,
+    },
+    dividerLine: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#F4F4F4',
+    },
+    dividerText: {
+        fontSize: 9,
+        fontWeight: '800',
+        color: '#F4A261',
+        textTransform: 'uppercase',
+        letterSpacing: 0.9,
+    },
     button: {
         backgroundColor: '#F4A261',
-        padding: 16,
+        padding: 13,          // era 16
         borderRadius: 30,
         alignItems: 'center',
-        marginTop: 24,
+        marginTop: 14,        // era 24
         shadowColor: '#F4A261',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.4,
@@ -248,23 +353,23 @@ const s = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontWeight: '800',
-        fontSize: 15,
+        fontSize: 14,
     },
     link: {
         textAlign: 'center',
-        marginTop: 16,
+        marginTop: 10,        // era 16
         color: '#aaa',
-        fontSize: 13,
+        fontSize: 12,
     },
     linkBold: {
         color: '#F4A261',
         fontWeight: '700',
     },
     msg: {
-        marginTop: 12,
+        marginTop: 8,
         textAlign: 'center',
         fontWeight: '600',
-        fontSize: 13,
+        fontSize: 12,
     },
     success: { color: '#1D9E75' },
     error: { color: '#D85A30' },
