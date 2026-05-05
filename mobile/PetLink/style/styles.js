@@ -124,32 +124,27 @@ export const registerStyles = StyleSheet.create({
 });
 
 export const appScreenStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
+    headerTop: { 
+        flexDirection: 'row',
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        marginBottom: 14
     },
-    appBack: {
-        backgroundColor: '#f4A261',
-        width: '100%',
-        padding: 20,
-        paddingTop: 30,
-        borderBottomRightRadius: 36,
-        borderBottomWidth: 3,
-        borderBottomColor: '#00000015',
-    },
-    sectionLabel: {
-        fontSize: 14,
-        color: '#000000',
-        fontWeight: '700',
-        letterSpacing: 0.8,
-    },
-    scroll: {
-        flex: 1,
-        width: '100%',
-    },
-    scrollContent: {
-        padding: 20,
-        paddingTop: 20,
-        paddingBottom: 100,
-    },
+    appName: { 
+        fontSize: 24, 
+        fontWeight: '900', color: '#fff' },
+    notifBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
+    searchBar: { backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: 12, padding: 10, paddingHorizontal: 14 },
+    searchText: { fontSize: 13, color: '#ccc', fontWeight: '600' },
+    filterScroll: { flexGrow: 0 },
+    filterContent: { paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
+    filterChip: { borderWidth: 1.5, borderColor: '#ECECEC', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6, backgroundColor: '#fff' },
+    filterChipActive: { borderColor: '#F4A261', backgroundColor: '#FFF5EE' },
+    filterText: { fontSize: 12, fontWeight: '700', color: '#aaa' },
+    filterTextActive: { color: '#F4A261' },
+    sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 6 },
+    sectionTitle: { fontSize: 13, fontWeight: '800', color: '#1a1a1a' },
+    sectionLink: { fontSize: 12, fontWeight: '700', color: '#F4A261' },
+    fab: { position: 'absolute', bottom: 24, right: 20, width: 52, height: 52, borderRadius: 26, backgroundColor: '#F4A261', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#F4A261', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 10 },
+    fabText: { color: '#fff', fontSize: 26, fontWeight: '300', lineHeight: 30 },
 });
