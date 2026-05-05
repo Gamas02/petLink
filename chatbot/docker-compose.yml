@@ -1,0 +1,107 @@
+services:
+
+  # ──────────────────────────────────────────────────
+  #  Banco de dados MySQL
+  # ──────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: banco_de_dados
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_DATABASE: petcare_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: apppass123
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -prootpass123 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 25s
+
+  # ──────────────────────────────────────────────────
+  #  Backend Flask
+  # ──────────────────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "5000:5000"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ──────────────────────────────────────────────────
+  #  Rasa Action Server (custom actions + MySQL)
+  # ──────────────────────────────────────────────────
+  rasa_actions:
+    build:
+      context: ./chatbot
+      dockerfile: Dockerfile.actions
+    container_name: rasa_actions
+    restart: unless-stopped
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USER: app_user
+      DB_PASSWORD: apppass123
+      DB_NAME: petcare_db
+
+    ports:
+      - "5055:5055"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ──────────────────────────────────────────────────
+  #  Rasa NLU + Core (servidor principal)
+  # ──────────────────────────────────────────────────
+  rasa:
+    image: rasa/rasa:3.6.20-full
+    container_name: chatbot_rasa
+    restart: unless-stopped
+
+    ports:
+      - "5005:5005"
+
+    volumes:
+      - ./chatbot:/app
+
+    # Treina o modelo na primeira inicialização e depois sobe o servidor
+    command: >
+      bash -c "
+        rasa train --domain /app/domain.yml
+                   --data /app/data
+                   --config /app/config.yml
+                   --out /app/models &&
+        rasa run --enable-api
+                 --cors '*'
+                 --host 0.0.0.0
+                 --port 5005
+                 --endpoints /app/endpoints.yml
+                 --credentials /app/credentials.yml
+      "
+
+    depends_on:
+      - rasa_actions
+      - mysql
+
+volumes:
+  mysql_data:

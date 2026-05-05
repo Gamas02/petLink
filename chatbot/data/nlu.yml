@@ -1,0 +1,286 @@
+version: "3.1"
+
+nlu:
+
+# ──────────────────────────────────────────────────────────────
+#  greet
+# ──────────────────────────────────────────────────────────────
+- intent: greet
+  examples: |
+    - oi
+    - olá
+    - ola
+    - bom dia
+    - boa tarde
+    - boa noite
+    - hey
+    - e aí
+    - eae
+    - tudo bem
+    - oi tudo bem
+    - olá tudo bem
+    - oi boa tarde
+    - oi bom dia
+    - bom dia tudo bem
+    - salve
+    - oi assistente
+    - olá petlink
+
+# ──────────────────────────────────────────────────────────────
+#  iniciar_denuncia
+# ──────────────────────────────────────────────────────────────
+- intent: iniciar_denuncia
+  examples: |
+    - denunciar
+    - quero denunciar
+    - quero fazer uma denuncia
+    - quero registrar uma denúncia
+    - fazer denuncia
+    - registrar ocorrência
+    - registrar denuncia
+    - vi um animal sendo maltratado
+    - encontrei um animal abandonado
+    - preciso denunciar maus tratos
+    - quero relatar um abuso
+    - tem um animal sendo maltratado
+    - quero reportar um caso
+    - vi maus tratos
+    - animal abandonado
+    - animal sendo agredido
+    - quero ajudar um animal
+    - preciso de ajuda para registrar
+    - tem um cachorro apanhando
+    - gato abandonado na rua
+    - vi um cavalo em situação precária
+    - animal sem comida
+    - quero denunciar um vizinho
+    - começar denúncia
+    - iniciar denúncia
+    - nova denuncia
+    - fazer uma denuncia
+
+# ──────────────────────────────────────────────────────────────
+#  informar_anonimato
+# ──────────────────────────────────────────────────────────────
+- intent: informar_anonimato
+  examples: |
+    - quero ser anônimo
+    - prefiro o anonimato
+    - não quero me identificar
+    - pode ser anônimo
+    - anonima sim
+    - quero meu nome protegido
+    - não quero aparecer
+    - sem identificação
+    - quero me identificar
+    - pode vincular ao meu perfil
+    - não precisa ser anônimo
+    - pode colocar meu nome
+    - identificado por favor
+
+# ──────────────────────────────────────────────────────────────
+#  informar_tipo
+# ──────────────────────────────────────────────────────────────
+- intent: informar_tipo
+  examples: |
+    - [abandono](tipo_denuncia)
+    - [agressão](tipo_denuncia)
+    - [agressao](tipo_denuncia)
+    - [negligência](tipo_denuncia)
+    - [negligencia](tipo_denuncia)
+    - [outro](tipo_denuncia)
+    - tipo [abandono](tipo_denuncia)
+    - é [agressão](tipo_denuncia)
+    - é um caso de [negligência](tipo_denuncia)
+    - [1](tipo_denuncia)
+    - [2](tipo_denuncia)
+    - [3](tipo_denuncia)
+    - [4](tipo_denuncia)
+    - opção 1
+    - opção 2
+    - opção 3
+    - opção 4
+    - o animal foi abandonado
+    - estão batendo no animal
+    - animal sem comida nem água
+    - é outro tipo de mau trato
+
+# ──────────────────────────────────────────────────────────────
+#  informar_descricao
+# ──────────────────────────────────────────────────────────────
+- intent: informar_descricao
+  examples: |
+    - [vi um cachorro acorrentado sem água e sem comida há dias](descricao)
+    - [encontrei um gato com ferimentos aparentes jogado no lixo](descricao)
+    - [meu vizinho bate no cachorro dele com frequência](descricao)
+    - [há um cavalo abandonado no terreno baldio da rua de baixo](descricao)
+    - [os animais estão presos em gaiolas pequenas sem higiene](descricao)
+    - [vi uma pessoa chutando um cachorro na rua](descricao)
+    - [animal preso ao sol sem abrigo por vários dias](descricao)
+    - [gato com chagas e sem cuidados veterinários](descricao)
+    - [cachorro acorrentado em corrente curta sem abrigo](descricao)
+    - [animal em situação de vulnerabilidade extrema](descricao)
+    - a descrição é [animal sendo agredido com frequência](descricao)
+    - descrevo assim: [vi animais em situação precária](descricao)
+
+# ──────────────────────────────────────────────────────────────
+#  informar_local
+# ──────────────────────────────────────────────────────────────
+- intent: informar_local
+  examples: |
+    - [Rua das Flores, 123, Centro](local)
+    - [Avenida Brasil, 500, São Paulo](local)
+    - [próximo ao mercado na rua principal](local)
+    - [bairro Jardim América, perto da escola](local)
+    - [Rua XV de Novembro esquina com a Rua Sete](local)
+    - [terreno baldio na Rua dos Ipês](local)
+    - não sei o endereço
+    - não sei
+    - não me recordo do local
+    - sem endereço
+    - não lembro
+    - não tenho o endereço exato
+
+# ──────────────────────────────────────────────────────────────
+#  informar_data
+# ──────────────────────────────────────────────────────────────
+- intent: informar_data
+  examples: |
+    - [03/05/2026](data_ocorrencia)
+    - [03/05/2026 14:30](data_ocorrencia)
+    - [hoje de manhã](data_ocorrencia)
+    - [ontem à tarde](data_ocorrencia)
+    - [semana passada](data_ocorrencia)
+    - [há dois dias](data_ocorrencia)
+    - [esta manhã](data_ocorrencia)
+    - [no domingo](data_ocorrencia)
+    - não sei a data
+    - não sei
+    - não me recordo
+    - sem data
+    - não lembro quando
+
+# ──────────────────────────────────────────────────────────────
+#  confirmar
+# ──────────────────────────────────────────────────────────────
+- intent: confirmar
+  examples: |
+    - sim
+    - s
+    - 1
+    - correto
+    - confirmar
+    - confirmo
+    - ok
+    - pode enviar
+    - tá certo
+    - está correto
+    - isso mesmo
+    - com certeza
+    - positivo
+    - quero confirmar
+    - pode registrar
+    - enviar denúncia
+    - concordo
+
+# ──────────────────────────────────────────────────────────────
+#  negar
+# ──────────────────────────────────────────────────────────────
+- intent: negar
+  examples: |
+    - não
+    - nao
+    - n
+    - 2
+    - cancelar
+    - não quero
+    - cancela
+    - desistir
+    - não confirmo
+    - está errado
+    - errado
+    - não é isso
+    - voltar
+    - recomeçar
+
+# ──────────────────────────────────────────────────────────────
+#  ajuda
+# ──────────────────────────────────────────────────────────────
+- intent: ajuda
+  examples: |
+    - ajuda
+    - help
+    - socorro
+    - como funciona
+    - o que posso fazer
+    - como usar
+    - não entendo
+    - me ajude
+    - preciso de ajuda
+    - como faço para denunciar
+    - dúvida
+    - não sei como proceder
+
+# ──────────────────────────────────────────────────────────────
+#  sair
+# ──────────────────────────────────────────────────────────────
+- intent: sair
+  examples: |
+    - sair
+    - tchau
+    - até logo
+    - encerrar
+    - fechar
+    - não preciso mais
+    - obrigado tchau
+    - até mais
+    - bye
+    - encerra
+
+# ──────────────────────────────────────────────────────────────
+#  lookup tables (auxilia o NER)
+# ──────────────────────────────────────────────────────────────
+- lookup: tipo_denuncia
+  examples: |
+    - abandono
+    - agressão
+    - agressao
+    - negligência
+    - negligencia
+    - outro
+    - "1"
+    - "2"
+    - "3"
+    - "4"
+
+- synonym: abandono
+  examples: |
+    - "1"
+    - abandono
+    - foi abandonado
+    - abandonado
+
+- synonym: "agressão"
+  examples: |
+    - "2"
+    - agressao
+    - agressão
+    - agredido
+    - batendo
+    - espancamento
+
+- synonym: "negligência"
+  examples: |
+    - "3"
+    - negligencia
+    - negligência
+    - sem comida
+    - sem água
+    - sem cuidado
+
+- synonym: outro
+  examples: |
+    - "4"
+    - outro
+    - outros
+    - diferente

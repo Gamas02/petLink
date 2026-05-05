@@ -1,108 +1,73 @@
 version: "3.1"
 
-stories:
+rules:
 
 # ──────────────────────────────────────────────────────────────
-#  Fluxo 1: Saudação simples
+#  Saudação sempre responde
 # ──────────────────────────────────────────────────────────────
-- story: saudacao simples
+- rule: Responder saudação
   steps:
     - intent: greet
     - action: utter_greet
 
 # ──────────────────────────────────────────────────────────────
-#  Fluxo 2: Saudação e início de denúncia
+#  Ajuda sempre responde (inclusive dentro do form)
 # ──────────────────────────────────────────────────────────────
-- story: saudacao e denuncia
-  steps:
-    - intent: greet
-    - action: utter_greet
-    - intent: iniciar_denuncia
-    - action: denuncia_form
-    - active_loop: denuncia_form
-
-# ──────────────────────────────────────────────────────────────
-#  Fluxo 3: Início direto de denúncia
-# ──────────────────────────────────────────────────────────────
-- story: inicio direto denuncia
-  steps:
-    - intent: iniciar_denuncia
-    - action: denuncia_form
-    - active_loop: denuncia_form
-
-# ──────────────────────────────────────────────────────────────
-#  Fluxo 4: Formulário completo → confirmação → salvar
-# ──────────────────────────────────────────────────────────────
-- story: denuncia completa confirmada
-  steps:
-    - intent: iniciar_denuncia
-    - action: denuncia_form
-    - active_loop: denuncia_form
-    - active_loop: null
-    - slot_was_set:
-        - requested_slot: null
-    - action: action_mostrar_resumo
-    - intent: confirmar
-    - action: action_salvar_denuncia
-
-# ──────────────────────────────────────────────────────────────
-#  Fluxo 5: Formulário completo → usuário cancela
-# ──────────────────────────────────────────────────────────────
-- story: denuncia cancelada pelo usuario
-  steps:
-    - intent: iniciar_denuncia
-    - action: denuncia_form
-    - active_loop: denuncia_form
-    - active_loop: null
-    - slot_was_set:
-        - requested_slot: null
-    - action: action_mostrar_resumo
-    - intent: negar
-    - action: utter_denuncia_cancelada
-
-# ──────────────────────────────────────────────────────────────
-#  Fluxo 6: Pedido de ajuda
-# ──────────────────────────────────────────────────────────────
-- story: pedido de ajuda
+- rule: Responder ajuda
   steps:
     - intent: ajuda
     - action: utter_ajuda
 
 # ──────────────────────────────────────────────────────────────
-#  Fluxo 7: Ajuda durante o formulário (interrupção)
+#  Sair sempre encerra
 # ──────────────────────────────────────────────────────────────
-- story: ajuda durante formulario
-  steps:
-    - intent: iniciar_denuncia
-    - action: denuncia_form
-    - active_loop: denuncia_form
-    - intent: ajuda
-    - action: utter_ajuda
-    - action: denuncia_form
-    - active_loop: denuncia_form
-
-# ──────────────────────────────────────────────────────────────
-#  Fluxo 8: Usuário quer sair
-# ──────────────────────────────────────────────────────────────
-- story: usuario sai
+- rule: Encerrar conversa
   steps:
     - intent: sair
     - action: utter_sair
 
 # ──────────────────────────────────────────────────────────────
-#  Fluxo 9: Nova denúncia após a primeira
+#  Ativar o formulário ao pedir denúncia
 # ──────────────────────────────────────────────────────────────
-- story: nova denuncia apos primeira
+- rule: Iniciar formulário de denúncia
   steps:
     - intent: iniciar_denuncia
     - action: denuncia_form
     - active_loop: denuncia_form
+
+# ──────────────────────────────────────────────────────────────
+#  Quando o formulário termina → mostrar resumo
+# ──────────────────────────────────────────────────────────────
+- rule: Exibir resumo ao completar o formulário
+  condition:
+    - active_loop: denuncia_form
+  steps:
+    - action: denuncia_form
     - active_loop: null
     - slot_was_set:
         - requested_slot: null
     - action: action_mostrar_resumo
+
+# ──────────────────────────────────────────────────────────────
+#  Usuário confirma → salvar denúncia
+# ──────────────────────────────────────────────────────────────
+- rule: Salvar denúncia após confirmação
+  steps:
     - intent: confirmar
     - action: action_salvar_denuncia
-    - intent: iniciar_denuncia
-    - action: denuncia_form
-    - active_loop: denuncia_form
+
+# ──────────────────────────────────────────────────────────────
+#  Usuário nega → cancelar
+# ──────────────────────────────────────────────────────────────
+- rule: Cancelar denúncia
+  steps:
+    - intent: negar
+    - action: utter_denuncia_cancelada
+
+# ──────────────────────────────────────────────────────────────
+#  Fallback
+# ──────────────────────────────────────────────────────────────
+- rule: Fallback para mensagens não entendidas
+  steps:
+    - intent: nlu_fallback
+    - action: utter_fallback

@@ -1,0 +1,19 @@
+# ─────────────────────────────────────────────────────
+#  actions/Dockerfile  –  Servidor de Actions do Rasa
+# ─────────────────────────────────────────────────────
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY actions/ ./actions/
+
+EXPOSE 5055
+
+CMD ["python", "-m", "rasa_sdk", "--actions", "actions", "--port", "5055"]

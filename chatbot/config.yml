@@ -1,0 +1,64 @@
+recipe: default.v1
+
+language: pt
+
+# ──────────────────────────────────────────────────────────────
+#  NLU PIPELINE
+# ──────────────────────────────────────────────────────────────
+pipeline:
+  # Tokenização para Português
+  - name: WhitespaceTokenizer
+
+  # Normalização e limpeza de texto
+  - name: RegexFeaturizer
+
+  # Features de lookup tables e synonyms
+  - name: LexicalSyntacticFeaturizer
+
+  # Features de contagem de palavras
+  - name: CountVectorsFeaturizer
+
+  # Features de n-gramas de caracteres (resistente a erros de digitação)
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+
+  # Classificador de intents robusto
+  - name: DIETClassifier
+    epochs: 150
+    constrain_similarities: true
+    entity_recognition: true
+
+  # Extrator de entidades com regras
+  - name: RegexEntityExtractor
+    use_lookup_tables: true
+    use_regexes: true
+
+  # Mapeamento de sinônimos
+  - name: EntitySynonymMapper
+
+  # Fallback quando confiança for baixa
+  - name: FallbackClassifier
+    threshold: 0.55
+    ambiguity_threshold: 0.1
+
+# ──────────────────────────────────────────────────────────────
+#  POLICIES
+# ──────────────────────────────────────────────────────────────
+policies:
+  # Regras determinísticas (máxima prioridade)
+  - name: RulePolicy
+    core_fallback_threshold: 0.4
+    core_fallback_action_name: "action_default_fallback"
+    enable_fallback_prediction: true
+
+  # Memória para conversas longas
+  - name: MemoizationPolicy
+    max_history: 8
+
+  # Política neural para fluxos complexos
+  - name: TEDPolicy
+    max_history: 8
+    epochs: 100
+    constrain_similarities: true
