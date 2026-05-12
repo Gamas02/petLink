@@ -124,15 +124,33 @@ export const registerStyles = StyleSheet.create({
 });
 
 export const appScreenStyles = StyleSheet.create({
-    headerTop: { 
+    headerTop: {
         flexDirection: 'row',
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 14
     },
-    appName: { 
-        fontSize: 24, 
-        fontWeight: '900', color: '#fff' },
+    
+    container: {
+        flex: 1,
+        backgroundColor: '#FFF',
+    },
+
+    scroll: {
+        flex: 1,
+    },
+    
+    denuncia: {
+        color: '#F4A261'
+    },
+
+    scrollContent: {
+        paddingBottom: 40,
+    },
+    appName: {
+        fontSize: 24,
+        fontWeight: '900', color: '#F4A261'
+    },
     notifBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
     searchBar: { backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: 12, padding: 10, paddingHorizontal: 14 },
     searchText: { fontSize: 13, color: '#ccc', fontWeight: '600' },
