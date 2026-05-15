@@ -32,17 +32,14 @@ export default function AppScreen({ navigation }) {
         <View style={styles.container}>
 
             <StatusBar
-                barStyle="light-content"
-                backgroundColor="#F4A261"
+                barStyle="dark-content"
+                backgroundColor="#FFF"
             />
 
             {/* HEADER */}
-            <View style={styles.appBack}>
-                <View style={styles.headerTop}>
-                    <Text style={styles.appName}>
-                        PetLink 🐾
-                    </Text>
-                </View>
+            <View style={styles.header}>
+                <Text style={styles.appName}>PetLink 🐾</Text>
+                <Text style={styles.appSubtitle}>Encontre quem precisa de você</Text>
             </View>
 
             {/* FILTROS */}
@@ -57,7 +54,15 @@ export default function AppScreen({ navigation }) {
                         key={f}
                         style={[
                             styles.filterChip,
-                            filtro === f && styles.filterChipActive
+                            {
+                                instituicoesFiltradas.map(item => (
+                                    <InstitutionCard
+                                        key={item.id}
+                                        item={item}
+                                        onDonate={() => navigation.navigate('Doacao', { institution: item })}
+                                    />
+                                ))
+                            }
                         ]}
                         onPress={() => setFiltro(f)}
                     >
@@ -87,31 +92,24 @@ export default function AppScreen({ navigation }) {
                 showsVerticalScrollIndicator={false}
                 nestedScrollEnabled={true}
             >
-
                 {instituicoesFiltradas.map(item => (
                     <InstitutionCard
                         key={item.id}
                         item={item}
                     />
                 ))}
-
-
-
             </ScrollView>
 
-            {/* HEADER */}
-            <View style={styles.appBack}>
-                <View style={styles.headerTop}>
-                    {/* BOTÃO */}
-                    <TouchableOpacity
-                        style={styles.denuncia}
-                        onPress={() => navigation.navigate('Denuncia')}
-                    >
-                        <Text style={styles.primaryButtonText}>
-                            Denunciar
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+            {/* FOOTER */}
+            <View style={styles.footer}>
+                <Text style={styles.footerLabel}>Viu algo errado?</Text>
+                <TouchableOpacity
+                    style={styles.denunciaBtn}
+                    onPress={() => navigation.navigate('Denuncia')}
+                    activeOpacity={0.85}
+                >
+                    <Text style={styles.denunciaBtnText}>🚨 Fazer Denúncia</Text>
+                </TouchableOpacity>
             </View>
 
         </View>
