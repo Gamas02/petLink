@@ -1,42 +1,48 @@
-from flask import Flask, jsonify, request, url_for, flash
+from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 from db import conectar
 from config import SECRET_KEY, FLASK_DEBUG
 from datetime import datetime
+import bcrypt
+import os
 
-# Importações.
-import bcrypt # Usado para criptografia de das senhas.
-import os # usado para puxar as variaveis de ambiente.
-
-UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads") # Vai ser utilizado para guardar arquivos.
+UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads")
 
 app = Flask(__name__)
+CORS(app, origins="*", allow_headers=["Content-Type"], methods=["GET", "POST", "OPTIONS"])
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'OPTIONS'])
 def login_user():
+    if request.method == 'OPTIONS':
+        return make_response('', 204)
+
     data = request.get_json()
-    user = data.get("user")
+    usuario = data.get("usuario")
     senha = data.get("senha").encode('utf-8')
     
-    if not user or not senha:
-        return jsonify({"erro":"Dados inválidos."}), 400
+    if not usuario or not senha:
+        return jsonify({"erro": "Dados inválidos."}), 400
     
     conexao = conectar()
     cursor = conexao.cursor()
     
     try:
-        cursor.execute("SELECT senha FROM Usuario WHERE name = %s", (user,))
+        cursor.execute("SELECT id, name, email, senha_hash FROM Usuario WHERE name = %s", (usuario,))
         resultado = cursor.fetchone()
+
         if not resultado:
-            return jsonify({"erro": "Usuario não encontrado"}), 404
+            return jsonify({"message": "Usuário não encontrado"}), 404
         
-        hash_banco = resultado[0].encode('utf-8')
+        hash_banco = resultado[3].encode('utf-8')
         
         if bcrypt.checkpw(senha, hash_banco):
-            return jsonify({"resposta":"ok"}), 200
-        
+            return jsonify({
+                "id": resultado[0],
+                "usuario": resultado[1],
+                "email": resultado[2],
+            }), 200
         else:
-            return jsonify({"resposta":"Senha incorreta"}), 401
+            return jsonify({"message": "Senha incorreta"}), 401
         
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
@@ -45,11 +51,14 @@ def login_user():
         cursor.close()
         conexao.close()
 
-# Rota de Registro de usuarios
-@app.route('/register-user', methods=['POST'])
+
+@app.route('/register-user', methods=['POST', 'OPTIONS'])
 def register_user():
+    if request.method == 'OPTIONS':
+        return make_response('', 204)
+
     data = request.get_json()
-    user = data.get("user")
+    usuario = data.get("usuario")
     senha = data.get("senha").encode('utf-8')
     email = data.get("email")
     telefone = data.get("telefone")
@@ -58,31 +67,30 @@ def register_user():
     estado = data.get("estado")
     data_cadastro = datetime.now()
     
-    if not user or not senha or not email or not telefone or not cpf or not estado or not data_cadastro:
-        return jsonify({"erro":"Dados inválidos."}), 400
+    if not usuario or not senha or not email or not telefone or not cpf or not estado:
+        return jsonify({"erro": "Dados inválidos."}), 400
     
     conexao = conectar()
     cursor = conexao.cursor()
-    
     senha_hash = bcrypt.hashpw(senha, bcrypt.gensalt())
     
     try:
         cursor.execute("""
-                       INSERT INTO Usuarios 
-                       (name, senha_hash, email, telefone, cpf, cidade, estado, data_cadastro)
-                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""", 
-                       (user, senha_hash, email, telefone, cpf, cidade, estado, data_cadastro))
-              
-        conectar.commit()
+            INSERT INTO Usuario 
+            (name, senha_hash, email, telefone, cpf, cidade, estado, data_cadastro)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""", 
+            (usuario, senha_hash, email, telefone, cpf, cidade, estado, data_cadastro))
+        
+        conexao.commit()  # ← corrigido: era conectar.commit()
         
         return jsonify({
-            "resposta":"ok",
+            "resposta": "ok",
             "id": cursor.lastrowid
         }), 200
     
     except Exception as e:
         return jsonify({
-            "resposta":"erro no servidor",
+            "resposta": "erro no servidor",
             "erro": str(e)
         }), 500
     
@@ -90,55 +98,62 @@ def register_user():
         cursor.close()
         conexao.close()
 
-# Rota de registro de Empresa/Ong
-@app.route("/register-ong", methods=["POST"])
+
+@app.route("/register-ong", methods=["POST", "OPTIONS"])
 def register_ong():
+    if request.method == 'OPTIONS':
+        return make_response('', 204)
+
     data = request.get_json()
-    user = data.get("user")
-    senha = data.get("senha")
+    usuario = data.get("usuario")
+    senha = data.get("senha").encode('utf-8')
     email = data.get("email")
     cnpj = data.get("cnpj")
     tipo = data.get("tipo")
     codigo_registro = data.get("codigo_registro")
     cidade = data.get("cidade")
     estado = data.get("estado")
-    data_cadastro = data.get("data_cadastro")
+    data_cadastro = datetime.now()
     
-    if not user or not senha or not email or not cnpj or not tipo or not codigo_registro or not cidade or not estado or not data_cadastro:
-        return jsonify({"erro":"Dados inválidos."}), 400
+    if not usuario or not senha or not email or not cnpj or not tipo or not codigo_registro or not cidade or not estado:
+        return jsonify({"erro": "Dados inválidos."}), 400
     
     conexao = conectar()
     cursor = conexao.cursor()
-    
     senha_hash = bcrypt.hashpw(senha, bcrypt.gensalt())
     
     try:
         cursor.execute("""
-                        INSERT INTO Empresa_Ong
-                        (nome, senha_hash, email, cnpj, tipo, codigo_registro, cidade, estado, data_cadastro)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                        (user, senha_hash, email, cnpj, tipo, codigo_registro, cidade, estado, data_cadastro))
+            INSERT INTO Empresa_Ong
+            (nome, senha_hash, email, cnpj, tipo, codigo_registro, cidade, estado, data_cadastro)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (usuario, senha_hash, email, cnpj, tipo, codigo_registro, cidade, estado, data_cadastro))
         
-        conectar.commit()
+        conexao.commit()  # ← corrigido: era conectar.commit()
         
         return jsonify({
-            "resposta":"ok",
+            "resposta": "ok",
             "id": cursor.lastrowid
         }), 200
     
     except Exception as e:
-        
         return jsonify({
-            "resposta":"erro no servidor",
+            "resposta": "erro no servidor",
             "erro": str(e)
         }), 500
         
     finally:
         cursor.close()
         conexao.close()
-    
-# Rota de criação de denuncias
-@app.route("/criar-denuncia")
+
+
+@app.route("/criar-denuncia", methods=["POST", "OPTIONS"])
 def criar_denuncias():
+    if request.method == 'OPTIONS':
+        return make_response('', 204)
     data = request.get_json()
-    return
+    return jsonify({"resposta": "ok"}), 200
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

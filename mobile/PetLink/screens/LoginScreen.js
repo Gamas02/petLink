@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
         try {
             setMensagem("Entrando...");
 
-            const response = await fetch("http://SEU_BACKEND/login", {
+            const response = await fetch("http://10.0.2.2:5000/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ usuario: usuario.trim(), senha }),
@@ -39,7 +39,12 @@ export default function LoginScreen({ navigation }) {
             const data = await response.json();
 
             if (response.ok) {
+                await login ({
+                    usuario: data.usuario,
+                    senha: data.senha
+                });
                 setMensagem("Login realizado com sucesso ✅");
+                navigation.navigate('App')
             } else {
                 setMensagem(data.message || "Erro no login ❌");
             }
@@ -74,7 +79,7 @@ export default function LoginScreen({ navigation }) {
                 <TouchableOpacity
                     style={[styles.button, (!usuario || !senha) && styles.buttonDisabled]}
                     disabled={!usuario || !senha}
-                    onPress={() => { handleLogin(); navigation.navigate('App'); }}
+                    onPress={() => { handleLogin }}
                 >
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableOpacity>

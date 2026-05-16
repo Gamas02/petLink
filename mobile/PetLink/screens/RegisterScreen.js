@@ -75,7 +75,7 @@ export default function RegisterScreen({ navigation }) {
 
         try {
             setMensagem("Enviando...");
-            const response = await fetch("http://SEU_BACKEND/register", {
+            const response = await fetch("http://localhost:5000/register-user", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

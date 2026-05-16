@@ -54,15 +54,7 @@ export default function AppScreen({ navigation }) {
                         key={f}
                         style={[
                             styles.filterChip,
-                            {
-                                instituicoesFiltradas.map(item => (
-                                    <InstitutionCard
-                                        key={item.id}
-                                        item={item}
-                                        onDonate={() => navigation.navigate('Doacao', { institution: item })}
-                                    />
-                                ))
-                            }
+                            filtro === f && styles.filterChipActive
                         ]}
                         onPress={() => setFiltro(f)}
                     >
@@ -96,6 +88,7 @@ export default function AppScreen({ navigation }) {
                     <InstitutionCard
                         key={item.id}
                         item={item}
+                        onDonate={() => navigation.navigate('Doacao', { institution: item })}
                     />
                 ))}
             </ScrollView>

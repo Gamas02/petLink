@@ -11,7 +11,7 @@ USE petcare_db;
 --  1. Usuario
 CREATE TABLE IF NOT EXISTS Usuario (
   id INT NOT NULL AUTO_INCREMENT,
-  nome VARCHAR(100) NOT NULL,
+  usuario VARCHAR(100) NOT NULL,
   email VARCHAR(150) NOT NULL,
   senha_hash VARCHAR(255) NOT NULL,
   telefone VARCHAR(20) NULL,

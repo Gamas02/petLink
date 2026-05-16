@@ -7,4 +7,7 @@ mysql-connector-python==9.6.0
  
 # Upload de arquivos
 Werkzeug==3.0.3
- 
+
+bcrypt==5.0.0
+
+flask-cors==6.0.2

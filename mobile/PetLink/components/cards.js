@@ -68,73 +68,56 @@ export function InstitutionCard({ item, onDonate }) {
 
     return (
         <View style={cardStyles.card}>
-            {/* Faixa colorida no topo */}
             <View style={[cardStyles.colorBar, { backgroundColor: item.color }]}>
                 <Text style={cardStyles.emoji}>{item.emoji}</Text>
             </View>
 
             <View style={cardStyles.body}>
-                {/* Nome e localização */}
                 <Text style={cardStyles.name}>{item.name}</Text>
                 <View style={cardStyles.locationRow}>
                     <Text style={cardStyles.locationIcon}>📍</Text>
                     <Text style={cardStyles.location}>{item.location}</Text>
                 </View>
 
-                {/* Tags */}
                 <View style={cardStyles.tagsRow}>
                     {item.tags.map((tag) => (
-                        {
-                            instituicoesFiltradas.map(item => (
-                                <InstitutionCard
-                                    key={item.id}
-                                    item={item}
-                                    onDonate={() => navigation.navigate('Doacao', { institution: item })}
-                                />
-                            ))
-                        },
-                        < Text
-                            key = { tag }
-                            style = { [cardStyles.tag, { backgroundColor: item.tagBg, color: item.tagText }]}
+                        <Text
+                            key={tag}
+                            style={[cardStyles.tag, { backgroundColor: item.tagBg, color: item.tagText }]}
                         >
-                        { tag }
+                            {tag}
                         </Text>
                     ))}
+                </View>
+
+                <View style={cardStyles.divider} />
+
+                <Text style={cardStyles.goalLabel}>Meta de adoções — junho</Text>
+                <View style={cardStyles.barBg}>
+                    <View
+                        style={[
+                            cardStyles.barFill,
+                            { width: `${percent}%`, backgroundColor: item.color },
+                        ]}
+                    />
+                </View>
+                <View style={cardStyles.goalRow}>
+                    <Text style={[cardStyles.goalCurrent, { color: item.color }]}>
+                        {item.goal.current} adoções
+                    </Text>
+                    <Text style={cardStyles.goalTotal}>meta: {item.goal.total}</Text>
+                </View>
+
+                <View style={[cardStyles.divider, { marginTop: 14 }]} />
+
+                <TouchableOpacity
+                    style={[cardStyles.donateBtn, { backgroundColor: item.color }]}
+                    onPress={onDonate}
+                    activeOpacity={0.85}
+                >
+                    <Text style={cardStyles.donateBtnText}>🤍 Doar para esta instituição</Text>
+                </TouchableOpacity>
             </View>
-
-            {/* Divisor */}
-            <View style={cardStyles.divider} />
-
-            {/* Progresso */}
-            <Text style={cardStyles.goalLabel}>Meta de adoções — junho</Text>
-            <View style={cardStyles.barBg}>
-                <View
-                    style={[
-                        cardStyles.barFill,
-                        { width: `${percent}%`, backgroundColor: item.color },
-                    ]}
-                />
-            </View>
-            <View style={cardStyles.goalRow}>
-                <Text style={[cardStyles.goalCurrent, { color: item.color }]}>
-                    {item.goal.current} adoções
-                </Text>
-                <Text style={cardStyles.goalTotal}>meta: {item.goal.total}</Text>
-            </View>
-
-            {/* Divisor */}
-            <View style={[cardStyles.divider, { marginTop: 14 }]} />
-
-            {/* Botão Doar */}
-            <TouchableOpacity
-                style={[cardStyles.donateBtn, { backgroundColor: item.color }]}
-                onPress={onDonate}
-                activeOpacity={0.85}
-            >
-                <Text style={cardStyles.donateBtnText}>Doar para esta instituição</Text>
-            </TouchableOpacity>
         </View>
-        </View >
     );
 }
-
