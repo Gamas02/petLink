@@ -59,11 +59,19 @@ CREATE TABLE IF NOT EXISTS Denuncia (
   anonima TINYINT(1) NOT NULL DEFAULT 0,
   latitude DECIMAL(10,8) NULL,
   longitude DECIMAL(11,8) NULL,
+
+  local_texto VARCHAR(255) NULL
+    COMMENT 'Endereço/descrição de local coletado pelo chatbot',
+
   data_ocorrencia DATETIME NULL,
   data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   PRIMARY KEY (id),
-  CONSTRAINT fk_denuncia_usuario FOREIGN KEY(id_usuario) REFERENCES Usuario(id) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT fk_denuncia_usuario
+    FOREIGN KEY(id_usuario)
+    REFERENCES Usuario(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
