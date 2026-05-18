@@ -10,7 +10,8 @@ import uuid
 import bcrypt
 import os
 
-UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", exists_ok=True)
+UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {
     "png", "jpg", "jpeg", "gif",
@@ -142,7 +143,7 @@ def register_ong():
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (usuario, senha_hash, email, cnpj, tipo, codigo_registro, cidade, estado, data_cadastro))
         
-        conexao.commit()  # ← corrigido: era conectar.commit()
+        conexao.commit()  
         
         return jsonify({
             "resposta": "ok",

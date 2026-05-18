@@ -232,6 +232,8 @@ class ActionSalvarDenuncia(Action):
         local_txt  = None if local_texto in ("não informado", None) else local_texto
         data_dt    = _normalizar_data(data_slot) if data_slot not in ("não informada", None) else None
 
+        # ALTERAR ISSO
+        # SOMENTE O BACKEND PODE CONECTAR COM O BANCO DE DADOS
         try:
             conn = _conectar()
             cur  = conn.cursor()
