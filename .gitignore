@@ -1,0 +1,5 @@
+chatbot/models/
+chatbot/.config/
+chatbot/.keras/
+chatbot/.rasa
+.env

@@ -15,7 +15,7 @@ services:
       MYSQL_PASSWORD: apppass123
 
     ports:
-      - "3308:3308"
+      - "3308:3306"
 
     volumes:
       - mysql_data:/var/lib/mysql
@@ -84,19 +84,14 @@ services:
     volumes:
       - ./chatbot:/app
 
-    # Treina o modelo na primeira inicialização e depois sobe o servidor
+    working_dir: /app
+
+    entrypoint: []
+
     command: >
       bash -c "
-        rasa train --domain /app/domain.yml
-                   --data /app/data
-                   --config /app/config.yml
-                   --out /app/models &&
-        rasa run --enable-api
-                 --cors '*'
-                 --host 0.0.0.0
-                 --port 5005
-                 --endpoints /app/endpoints.yml
-                 --credentials /app/credentials.yml
+        rasa train --domain /app/domain.yml --data /app/data --config /app/config.yml --out /app/models &&
+        rasa run --enable-api --cors '*' --i 0.0.0.0 --p 5005 --endpoints /app/endpoints.yml --credentials /app/credentials.yml
       "
 
     depends_on:
