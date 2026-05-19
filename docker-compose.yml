@@ -19,7 +19,7 @@ services:
 
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./database:/docker-entrypoint-initdb.d
+      - ./database/init/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql
 
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -prootpass123 || exit 1"]
