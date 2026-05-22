@@ -30,23 +30,28 @@ entities:
 #  SLOTS
 # ──────────────────────────────────────────────────────────────
 slots:
+
   anonima:
     type: categorical
     values:
       - "sim"
       - "nao"
     mappings:
-      - type: from_entity
-        entity: anonima
       - type: from_intent
         intent: confirmar
         value: "sim"
         conditions:
           - active_loop: denuncia_form
             requested_slot: anonima
+
       - type: from_intent
         intent: negar
         value: "nao"
+        conditions:
+          - active_loop: denuncia_form
+            requested_slot: anonima
+
+      - type: from_text
         conditions:
           - active_loop: denuncia_form
             requested_slot: anonima
@@ -61,12 +66,18 @@ slots:
     mappings:
       - type: from_entity
         entity: tipo_denuncia
+        conditions:
+          - active_loop: denuncia_form
+            requested_slot: tipo_denuncia
+
+      - type: from_text
+        conditions:
+          - active_loop: denuncia_form
+            requested_slot: tipo_denuncia
 
   descricao:
     type: text
     mappings:
-      - type: from_entity
-        entity: descricao
       - type: from_text
         conditions:
           - active_loop: denuncia_form
@@ -75,8 +86,6 @@ slots:
   local:
     type: text
     mappings:
-      - type: from_entity
-        entity: local
       - type: from_text
         conditions:
           - active_loop: denuncia_form
@@ -85,8 +94,6 @@ slots:
   data_ocorrencia:
     type: text
     mappings:
-      - type: from_entity
-        entity: data_ocorrencia
       - type: from_text
         conditions:
           - active_loop: denuncia_form
@@ -106,6 +113,7 @@ slots:
 #  RESPONSES
 # ──────────────────────────────────────────────────────────────
 responses:
+
   utter_greet:
     - text: |
         Olá! 🐾 Sou o assistente de denúncias do *PetLink*.
@@ -167,7 +175,7 @@ responses:
     - text: |
         📅 Quando ocorreu? Informe a data e hora.
 
-        Exemplos: *03/05/2026 14:30*  ou  *ontem de manhã*
+        Exemplos: *03/05/2026 14:30* ou *ontem de manhã*
         Se não souber, responda *não sei*.
 
   utter_resumo_denuncia:
@@ -206,6 +214,7 @@ responses:
 #  FORMS
 # ──────────────────────────────────────────────────────────────
 forms:
+
   denuncia_form:
     required_slots:
       - anonima
@@ -221,20 +230,10 @@ actions:
   - action_salvar_denuncia
   - action_mostrar_resumo
   - validate_denuncia_form
-  - utter_greet
-  - utter_ajuda
-  - utter_ask_anonima
-  - utter_ask_tipo_denuncia
-  - utter_ask_descricao
-  - utter_ask_local
-  - utter_ask_data_ocorrencia
-  - utter_resumo_denuncia
-  - utter_denuncia_registrada
-  - utter_denuncia_cancelada
-  - utter_erro_banco
-  - utter_sair
-  - utter_fallback
 
+# ──────────────────────────────────────────────────────────────
+#  SESSION
+# ──────────────────────────────────────────────────────────────
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: false
