@@ -15,7 +15,6 @@ import Svg, { Path } from 'react-native-svg';
 
 import { loginStyles as styles } from '../style/styles';
 import { TopWave, BottomWave } from '../components/waves';
-import { AuthContext } from '../context/AuthContext';
 
 export default function LoginScreen({ navigation }) {
 
@@ -46,11 +45,7 @@ export default function LoginScreen({ navigation }) {
                 data = await response.json();
             } catch { }
 
-            if (response.ok) {
-                await login({
-                    usuario: data.usuario,
-                    email: data.email
-                });
+            if (response.ok) {;
                 setMensagem("Login realizado com sucesso ✅");
                 navigation.navigate('App')
             } else {
