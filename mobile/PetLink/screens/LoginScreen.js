@@ -1,22 +1,26 @@
 import 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  StatusBar,
-  Dimensions,
-  ScrollView,
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    StatusBar,
+    Dimensions,
+    ScrollView,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 
 import { loginStyles as styles } from '../style/styles';
 import { TopWave, BottomWave } from '../components/waves';
+import { AuthContext } from '../context/AuthContext';
 
 export default function LoginScreen({ navigation }) {
+
+    const { login } = useContext(AuthContext);
+
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
     const [mensagem, setMensagem] = useState('');
@@ -36,10 +40,14 @@ export default function LoginScreen({ navigation }) {
                 body: JSON.stringify({ usuario: usuario.trim(), senha }),
             });
 
-            const data = await response.json();
+            let data = {};
+
+            try {
+                data = await response.json();
+            } catch { }
 
             if (response.ok) {
-                await login ({
+                await login({
                     usuario: data.usuario,
                     email: data.email
                 });
@@ -79,7 +87,7 @@ export default function LoginScreen({ navigation }) {
                 <TouchableOpacity
                     style={[styles.button, (!usuario || !senha) && styles.buttonDisabled]}
                     disabled={!usuario || !senha}
-                    onPress={() => { handleLogin }}
+                    onPress={() => handleLogin()}
                 >
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableOpacity>
