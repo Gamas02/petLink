@@ -18,8 +18,6 @@ import { TopWave, BottomWave } from '../components/waves';
 
 export default function LoginScreen({ navigation }) {
 
-    const { login } = useContext(AuthContext);
-
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
     const [mensagem, setMensagem] = useState('');
