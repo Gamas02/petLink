@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 
 // ⚠️  Ajuste para o IP/host do seu servidor Rasa
-const RASA_URL = 'http://10.0.2.2:5005/webhooks/rest/webhook';
+const RASA_URL = 'http://localhost:5005/webhooks/rest/webhook';
 
 // IDs únicos para as mensagens da lista
 let _msgId = 0;
