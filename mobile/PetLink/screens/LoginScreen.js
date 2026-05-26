@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
         try {
             setMensagem("Entrando...");
 
-            const response = await fetch("http://10.0.2.2:5000/login", {
+            const response = await fetch("http://localhost:5000/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ usuario: usuario.trim(), senha }),
@@ -41,7 +41,7 @@ export default function LoginScreen({ navigation }) {
             if (response.ok) {
                 await login ({
                     usuario: data.usuario,
-                    senha: data.senha
+                    email: data.email
                 });
                 setMensagem("Login realizado com sucesso ✅");
                 navigation.navigate('App')
