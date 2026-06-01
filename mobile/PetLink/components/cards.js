@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { cardStyles } from '../style/styles';
 
+
 export const institutions = [
     {
         id: '1',
@@ -121,3 +122,45 @@ export function InstitutionCard({ item, onDonate }) {
         </View>
     );
 }
+// Substitui o array estático por uma referência mutável + listener
+
+let _institutions = [
+    {
+        id: '1',
+        name: 'Instituto Patinhas',
+        // ... dados originais iguais
+    },
+    // ... demais itens originais
+];
+
+let _listeners = [];
+
+export function getInstitutions() {
+    return _institutions;
+}
+
+export function addInstitution(novaOng) {
+    const nova = {
+        ...novaOng,
+        id: String(Date.now()),           // id único
+        goal: novaOng.goal ?? { current: 0, total: 50 },
+        tags: novaOng.tags ?? [],
+        emoji: novaOng.emoji ?? '🐾',
+        color: novaOng.color ?? '#F4A261',
+        tagBg: novaOng.tagBg ?? '#FEF0E6',
+        tagText: novaOng.tagText ?? '#7C4A1A',
+    };
+    _institutions = [..._institutions, nova];
+    _listeners.forEach(fn => fn(_institutions));
+}
+
+export function useInstitutions() {
+    const [list, setList] = React.useState(_institutions);
+    React.useEffect(() => {
+        _listeners.push(setList);
+        return () => { _listeners = _listeners.filter(fn => fn !== setList); };
+    }, []);
+    return list;
+}
+
+const institutions = useInstitutions();
