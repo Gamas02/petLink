@@ -2,4 +2,5 @@ chatbot/models/
 chatbot/.config/
 chatbot/.keras/
 chatbot/.rasa
+mobile/node_modules
 .env
