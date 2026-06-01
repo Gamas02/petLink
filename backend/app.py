@@ -33,34 +33,39 @@ def login_user():
     data = request.get_json()
     usuario = data.get("usuario")
     senha = data.get("senha").encode('utf-8')
-    
+
     if not usuario or not senha:
         return jsonify({"erro": "Dados inválidos."}), 400
-    
+
     conexao = conectar()
     cursor = conexao.cursor()
-    
+
     try:
-        cursor.execute("SELECT id, usuario, email, senha_hash FROM Usuario WHERE usuario = %s", (usuario,))
+        cursor.execute(
+            "SELECT id, usuario, email, senha_hash, is_admin FROM Usuario WHERE usuario = %s",
+            (usuario,)
+        )
+
         resultado = cursor.fetchone()
 
         if not resultado:
             return jsonify({"message": "Usuário não encontrado"}), 404
-        
+
         hash_banco = resultado[3].encode('utf-8')
-        
+
         if bcrypt.checkpw(senha, hash_banco):
             return jsonify({
                 "id": resultado[0],
                 "usuario": resultado[1],
                 "email": resultado[2],
+                "is_admin": int(resultado[4])
             }), 200
         else:
             return jsonify({"message": "Senha incorreta"}), 401
-        
+
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
-    
+
     finally:
         cursor.close()
         conexao.close()
