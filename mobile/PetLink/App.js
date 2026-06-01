@@ -9,6 +9,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import DenunciaChat from './screens/DenunciaChat';
 import DoacaoScreen from './screens/DoacaoScreen';
+import AdmScreen from './screens/AdmScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ export default function App() {
         <Stack.Screen name="Registrar-se" component={RegisterScreen} />
         <Stack.Screen name="App" component={AppScreen} />
         <Stack.Screen name="Denuncia" component={DenunciaChat} />
+        <Stack.Screen name="Adm" component={AdmScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

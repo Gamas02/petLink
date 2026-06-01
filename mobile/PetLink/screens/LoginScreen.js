@@ -43,9 +43,12 @@ export default function LoginScreen({ navigation }) {
                 data = await response.json();
             } catch { }
 
-            if (response.ok) {;
+            if (response.ok && response.is_admin == 0) {;
                 setMensagem("Login realizado com sucesso ✅");
                 navigation.navigate('App')
+            }
+            if (response.ok && response.is_admin == 1){
+                navigation.navigate('')
             } else {
                 setMensagem(data.message || "Erro no login ❌");
             }
