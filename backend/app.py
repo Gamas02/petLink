@@ -55,13 +55,14 @@ def login_user():
 
         if bcrypt.checkpw(senha, hash_banco):
             return jsonify({
+                "resposta": "ok",
                 "id": resultado[0],
                 "usuario": resultado[1],
                 "email": resultado[2],
                 "is_admin": int(resultado[4])
             }), 200
         else:
-            return jsonify({"message": "Senha incorreta"}), 401
+            return jsonify({"resposta": "Senha incorreta"}), 401
 
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
@@ -69,7 +70,6 @@ def login_user():
     finally:
         cursor.close()
         conexao.close()
-
 
 @app.route('/register-user', methods=['POST', 'OPTIONS'])
 def register_user():
