@@ -9,19 +9,14 @@ import {
 } from 'react-native';
 
 import { appScreenStyles as styles } from '../style/styles';
-import { InstitutionCard, institutions } from '../components/cards';
+import { InstitutionCard, useInstitutions } from '../components/cards'; // <-- mudança aqui
 
 export default function AppScreen({ navigation }) {
-
     const [filtro, setFiltro] = useState('Todos');
+    
+    const institutions = useInstitutions(); // <-- dados reativos
 
-    const filtros = [
-        'Todos',
-        'Cães',
-        'Gatos',
-        'Silvestres',
-        'Próximos'
-    ];
+    const filtros = ['Todos', 'Cães', 'Gatos', 'Silvestres', 'Próximos'];
 
     const instituicoesFiltradas =
         filtro === 'Todos'
@@ -30,19 +25,13 @@ export default function AppScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor="#FFF" />
 
-            <StatusBar
-                barStyle="dark-content"
-                backgroundColor="#FFF"
-            />
-
-            {/* HEADER */}
             <View style={styles.header}>
                 <Text style={styles.appName}>PetLink 🐾</Text>
                 <Text style={styles.appSubtitle}>Encontre quem precisa de você</Text>
             </View>
 
-            {/* FILTROS */}
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -52,32 +41,22 @@ export default function AppScreen({ navigation }) {
                 {filtros.map(f => (
                     <TouchableOpacity
                         key={f}
-                        style={[
-                            styles.filterChip,
-                            filtro === f && styles.filterChipActive
-                        ]}
+                        style={[styles.filterChip, filtro === f && styles.filterChipActive]}
                         onPress={() => setFiltro(f)}
                     >
-                        <Text
-                            style={[
-                                styles.filterText,
-                                filtro === f && styles.filterTextActive
-                            ]}
-                        >
+                        <Text style={[styles.filterText, filtro === f && styles.filterTextActive]}>
                             {f}
                         </Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
 
-            {/* CONTAGEM */}
             <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>
                     {instituicoesFiltradas.length} instituições encontradas
                 </Text>
             </View>
 
-            {/* LISTA */}
             <ScrollView
                 style={styles.scroll}
                 contentContainerStyle={styles.scrollContent}
@@ -93,7 +72,6 @@ export default function AppScreen({ navigation }) {
                 ))}
             </ScrollView>
 
-            {/* FOOTER */}
             <View style={styles.footer}>
                 <Text style={styles.footerLabel}>Viu algo errado?</Text>
                 <TouchableOpacity
@@ -104,7 +82,6 @@ export default function AppScreen({ navigation }) {
                     <Text style={styles.denunciaBtnText}>🚨 Fazer Denúncia</Text>
                 </TouchableOpacity>
             </View>
-
         </View>
     );
 }

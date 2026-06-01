@@ -2,14 +2,13 @@ import 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, TextInput,
-    TouchableOpacity, ScrollView,
+    TouchableOpacity, ScrollView, Alert,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // npm install @react-native-picker/picker
+import { Picker } from '@react-native-picker/picker';
 import { TopWave, BottomWave } from '../components/waves';
-import { addInstitution } from '../data/institutions';
+import { addInstitution } from '../components/cards'; // <-- caminho corrigido
 
 export default function AdmScreen({ navigation }) {
-
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
 
@@ -19,13 +18,17 @@ export default function AdmScreen({ navigation }) {
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [telefone, setTelefone] = useState('');
     const [cnpj, setCnpj] = useState('');
-    const [tipo, setTipo] = useState('');        // 'ong' | 'canil'
-    const [codigo_registro, setCodigoRegistro] = useState('');       // opcional
+    const [tipo, setTipo] = useState('');
+    const [codigo_registro, setCodigoRegistro] = useState('');
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
+    // NOVOS CAMPOS
+    const [endereco, setEndereco] = useState('');
+    const [descricao, setDescricao] = useState('');
+    const [tags, setTags] = useState(''); // string para digitar tags separadas por vírgula
     const [mensagem, setMensagem] = useState('');
 
-    // ── máscaras ────────────────────────────────────────────────
+    // Máscaras (mantidas iguais)
     const mascaraCNPJ = (t) =>
         t.replace(/\D/g, '').slice(0, 14)
             .replace(/(\d{2})(\d)/, '$1.$2')
@@ -40,8 +43,8 @@ export default function AdmScreen({ navigation }) {
 
     const emailValido = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
-    // ── validação + envio ────────────────────────────────────────
     const handleRegister = async () => {
+        // Validações
         if (!nome.trim()) { setMensagem("Nome obrigatório"); return; }
         if (!emailValido(email)) { setMensagem("E-mail inválido"); return; }
         if (cnpj.replace(/\D/g, '').length !== 14) { setMensagem("CNPJ inválido"); return; }
@@ -49,7 +52,17 @@ export default function AdmScreen({ navigation }) {
         if (senha.length < 6) { setMensagem("Senha deve ter no mínimo 6 caracteres"); return; }
         if (senha !== confirmarSenha) { setMensagem("As senhas não coincidem"); return; }
         if (estado.length !== 2) { setMensagem("Estado inválido"); return; }
+        if (!endereco.trim()) { setMensagem("Endereço é obrigatório"); return; }
 
+        // Processa tags (separadas por vírgula)
+        const tagsArray = tags.split(',').map(t => t.trim()).filter(t => t);
+        if (tagsArray.length === 0) {
+            // Se não informou tags, coloca uma padrão baseada no tipo
+            if (tipo === 'canil') tagsArray.push('Cães');
+            else if (tipo === 'ong') tagsArray.push('Cães', 'Gatos');
+        }
+
+        // Monta objeto para enviar ao backend (API)
         try {
             setMensagem("Enviando...");
             const response = await fetch("http://10.0.2.2:5000/register-ong", {
@@ -61,110 +74,80 @@ export default function AdmScreen({ navigation }) {
                     senha,
                     telefone: telefone.replace(/\D/g, ''),
                     cnpj: cnpj.replace(/\D/g, ''),
-                    tipo,                                // 'ong' ou 'canil'
+                    tipo,
                     codigo_registro: codigo_registro.trim() || null,
                     cidade: cidade.trim(),
                     estado,
+                    endereco: endereco.trim(),
+                    descricao: descricao.trim(),
+                    tags: tagsArray,
                 }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                addInstitution({
+                // Dados completos para o card
+                const fullAddress = `${endereco.trim()}, ${cidade.trim()} - ${estado}`;
+                await addInstitution({
                     name: nome.trim(),
                     location: `${cidade.trim()}, ${estado}`,
+                    address: fullAddress,
                     emoji: tipo === 'canil' ? '🐕' : '🐾',
-                    tags: tipo === 'canil' ? ['Cães'] : [],
+                    tags: tagsArray,
                     goal: { current: 0, total: 50 },
-                    color: '#F4A261',
+                    color: '#F4A261',      // padrão, depois pode editar
                     tagBg: '#FEF0E6',
                     tagText: '#7C4A1A',
-                    description: '',
+                    description: descricao.trim() || "Nova instituição cadastrada.",
                 });
                 setMensagem("Cadastro realizado com sucesso ✅");
-                setTimeout(() => navigation.navigate('Login'), 1500);
+                // Redireciona para a tela principal (AppScreen) após 1.5s
+                setTimeout(() => navigation.replace('App'), 1500); // use replace para não voltar ao formulário
             } else {
                 setMensagem(data.message || "Erro ao cadastrar ❌");
             }
-        } catch {
+        } catch (error) {
+            console.error(error);
             setMensagem("Erro de conexão com servidor 🌐");
         }
     };
 
-    const camposObrigatorios =
-        !nome || !email || !cnpj || !tipo || !senha || !confirmarSenha || !estado;
+    const camposObrigatorios = !nome || !email || !cnpj || !tipo || !senha || !confirmarSenha || !estado || !endereco;
 
     return (
         <View style={s.screen}>
             <TopWave />
             <BottomWave />
-            <ScrollView
-                contentContainerStyle={s.scroll}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-            >
+            <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
                 <View style={s.card}>
-                    <Text style={s.title}>Registrar-se</Text>
+                    <Text style={s.title}>Registrar ONG / Canil</Text>
 
                     {/* Nome */}
-                    <Text style={s.label}>Nome da ONG / Canil</Text>
-                    <TextInput
-                        style={s.input}
-                        placeholder="Nome completo"
-                        placeholderTextColor="#bbb"
-                        value={nome}
-                        onChangeText={(t) => { setNome(t.trimStart()); setMensagem(""); }}
-                    />
+                    <Text style={s.label}>Nome da ONG / Canil *</Text>
+                    <TextInput style={s.input} placeholder="Nome completo" value={nome} onChangeText={setNome} />
 
-                    {/* E-mail */}
-                    <Text style={s.label}>E-mail</Text>
-                    <TextInput
-                        style={s.input}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        placeholder="contato@ong.org"
-                        placeholderTextColor="#bbb"
-                        value={email}
-                        onChangeText={(t) => { setEmail(t.trimStart()); setMensagem(""); }}
-                    />
+                    {/* Email */}
+                    <Text style={s.label}>E-mail *</Text>
+                    <TextInput style={s.input} keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
 
                     {/* CNPJ + Telefone */}
                     <View style={s.row}>
                         <View style={s.colHalf}>
-                            <Text style={s.label}>CNPJ</Text>
-                            <TextInput
-                                style={s.input}
-                                placeholder="00.000.000/0000-00"
-                                placeholderTextColor="#bbb"
-                                keyboardType="numeric"
-                                value={cnpj}
-                                onChangeText={(t) => { setCnpj(mascaraCNPJ(t)); setMensagem(""); }}
-                            />
+                            <Text style={s.label}>CNPJ *</Text>
+                            <TextInput style={s.input} keyboardType="numeric" value={cnpj} onChangeText={t => setCnpj(mascaraCNPJ(t))} />
                         </View>
                         <View style={s.colHalf}>
                             <Text style={s.label}>Telefone</Text>
-                            <TextInput
-                                style={s.input}
-                                placeholder="(00) 00000-0000"
-                                placeholderTextColor="#bbb"
-                                keyboardType="phone-pad"
-                                value={telefone}
-                                onChangeText={(t) => { setTelefone(mascaraTelefone(t)); setMensagem(""); }}
-                            />
+                            <TextInput style={s.input} keyboardType="phone-pad" value={telefone} onChangeText={t => setTelefone(mascaraTelefone(t))} />
                         </View>
                     </View>
 
                     {/* Tipo */}
-                    <Text style={s.label}>Tipo</Text>
+                    <Text style={s.label}>Tipo *</Text>
                     <View style={s.pickerWrap}>
-                        <Picker
-                            selectedValue={tipo}
-                            onValueChange={(v) => { setTipo(v); setMensagem(""); }}
-                            style={s.picker}
-                        >
-                            <Picker.Item label="Selecione..." value="" color="#bbb" />
+                        <Picker selectedValue={tipo} onValueChange={setTipo}>
+                            <Picker.Item label="Selecione..." value="" />
                             <Picker.Item label="ONG" value="ong" />
                             <Picker.Item label="Canil" value="canil" />
                         </Picker>
@@ -172,71 +155,47 @@ export default function AdmScreen({ navigation }) {
 
                     {/* Código de registro (opcional) */}
                     <Text style={s.label}>Código de registro <Text style={s.opcional}>(opcional)</Text></Text>
-                    <TextInput
-                        style={s.input}
-                        placeholder="Ex: CRMV-SP 12345"
-                        placeholderTextColor="#bbb"
-                        value={codigo_registro}
-                        onChangeText={(t) => { setCodigoRegistro(t.trimStart()); setMensagem(""); }}
-                    />
+                    <TextInput style={s.input} placeholder="Ex: CRMV-SP 12345" value={codigo_registro} onChangeText={setCodigoRegistro} />
 
-                    {/* Estado + Cidade */}
+                    {/* Endereço (novo campo obrigatório) */}
+                    <Text style={s.label}>Endereço (Rua, número, bairro) *</Text>
+                    <TextInput style={s.input} placeholder="Rua Exemplo, 123, Centro" value={endereco} onChangeText={setEndereco} />
+
+                    {/* Cidade + Estado */}
                     <View style={s.row}>
                         <View style={s.colEstado}>
-                            <Text style={s.label}>Estado</Text>
-                            <TextInput
-                                style={s.input}
-                                placeholder="SP"
-                                placeholderTextColor="#bbb"
-                                value={estado}
-                                maxLength={2}
-                                onChangeText={(t) => {
-                                    setEstado(t.toUpperCase().replace(/[^A-Z]/g, ''));
-                                    setMensagem("");
-                                }}
-                            />
+                            <Text style={s.label}>Estado *</Text>
+                            <TextInput style={s.input} placeholder="SP" maxLength={2} value={estado} onChangeText={t => setEstado(t.toUpperCase().replace(/[^A-Z]/g, ''))} />
                         </View>
                         <View style={s.colCidade}>
-                            <Text style={s.label}>Cidade</Text>
-                            <TextInput
-                                style={s.input}
-                                placeholder="Sua cidade"
-                                placeholderTextColor="#bbb"
-                                value={cidade}
-                                onChangeText={(t) => { setCidade(t.trimStart()); setMensagem(""); }}
-                            />
+                            <Text style={s.label}>Cidade *</Text>
+                            <TextInput style={s.input} placeholder="Cidade" value={cidade} onChangeText={setCidade} />
                         </View>
                     </View>
 
+                    {/* Tags (opcional, separadas por vírgula) */}
+                    <Text style={s.label}>Tags (separadas por vírgula)</Text>
+                    <TextInput style={s.input} placeholder="Ex: Cães, Gatos, Aves" value={tags} onChangeText={setTags} />
+
+                    {/* Descrição */}
+                    <Text style={s.label}>Descrição da instituição</Text>
+                    <TextInput style={[s.input, { height: 80, textAlignVertical: 'top' }]} placeholder="Fale sobre o trabalho..." multiline value={descricao} onChangeText={setDescricao} />
+
                     {/* Senha */}
-                    <Text style={s.label}>Senha</Text>
+                    <Text style={s.label}>Senha *</Text>
                     <View style={s.inputWrap}>
-                        <TextInput
-                            style={s.input}
-                            placeholder="Mínimo 6 caracteres"
-                            placeholderTextColor="#bbb"
-                            secureTextEntry={!mostrarSenha}
-                            value={senha}
-                            onChangeText={(t) => { setSenha(t); setMensagem(""); }}
-                        />
+                        <TextInput style={s.input} secureTextEntry={!mostrarSenha} value={senha} onChangeText={setSenha} />
                         <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarSenha(v => !v)}>
-                            <Text>{mostrarSenha ? '✕' : '◉'}</Text>
+                            <Text>{mostrarSenha ? '🙈' : '👁️'}</Text>
                         </TouchableOpacity>
                     </View>
 
                     {/* Confirmar senha */}
-                    <Text style={s.label}>Confirmar Senha</Text>
+                    <Text style={s.label}>Confirmar Senha *</Text>
                     <View style={s.inputWrap}>
-                        <TextInput
-                            style={s.input}
-                            placeholder="Repita a senha"
-                            placeholderTextColor="#bbb"
-                            secureTextEntry={!mostrarConfirmar}
-                            value={confirmarSenha}
-                            onChangeText={(t) => { setConfirmarSenha(t); setMensagem(""); }}
-                        />
+                        <TextInput style={s.input} secureTextEntry={!mostrarConfirmar} value={confirmarSenha} onChangeText={setConfirmarSenha} />
                         <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarConfirmar(v => !v)}>
-                            <Text>{mostrarConfirmar ? '✕' : '◉'}</Text>
+                            <Text>{mostrarConfirmar ? '🙈' : '👁️'}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -246,11 +205,7 @@ export default function AdmScreen({ navigation }) {
                         </Text>
                     ) : null}
 
-                    <TouchableOpacity
-                        style={[s.button, camposObrigatorios && s.buttonDisabled]}
-                        disabled={camposObrigatorios}
-                        onPress={handleRegister}
-                    >
+                    <TouchableOpacity style={[s.button, camposObrigatorios && s.buttonDisabled]} disabled={camposObrigatorios} onPress={handleRegister}>
                         <Text style={s.buttonText}>Cadastrar</Text>
                     </TouchableOpacity>
 
@@ -263,14 +218,15 @@ export default function AdmScreen({ navigation }) {
     );
 }
 
+// Estilos (mantidos iguais, apenas ajuste no scroll)
 const s = StyleSheet.create({
     screen: { flex: 1, backgroundColor: '#fff' },
-    scroll: { flexGrow: 1, justifyContent: 'center', paddingVertical: 80, paddingHorizontal: 20 },
+    scroll: { flexGrow: 1, justifyContent: 'center', paddingVertical: 40, paddingHorizontal: 20 },
     card: { backgroundColor: '#fff', borderRadius: 20, padding: 18, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 6 },
-    title: { fontSize: 20, fontWeight: '900', textAlign: 'center', color: '#1a1a1a', marginBottom: 10 },
-    label: { fontSize: 10, fontWeight: '700', color: '#888', marginTop: 8, marginBottom: 3, textTransform: 'uppercase', letterSpacing: 0.5 },
-    opcional: { fontWeight: '400', textTransform: 'none' },
-    input: { borderWidth: 1.5, borderColor: '#ECECEC', borderRadius: 12, padding: 8, fontSize: 13, color: '#1a1a1a', backgroundColor: '#FAFAFA' },
+    title: { fontSize: 20, fontWeight: '900', textAlign: 'center', marginBottom: 10 },
+    label: { fontSize: 10, fontWeight: '700', color: '#888', marginTop: 8, marginBottom: 3 },
+    opcional: { fontWeight: '400' },
+    input: { borderWidth: 1.5, borderColor: '#ECECEC', borderRadius: 12, padding: 8, fontSize: 13, backgroundColor: '#FAFAFA' },
     row: { flexDirection: 'row', gap: 10 },
     colHalf: { flex: 1 },
     colEstado: { width: 72 },
@@ -278,8 +234,8 @@ const s = StyleSheet.create({
     inputWrap: { position: 'relative' },
     eyeBtn: { position: 'absolute', right: 10, top: 8 },
     pickerWrap: { borderWidth: 1.5, borderColor: '#ECECEC', borderRadius: 12, backgroundColor: '#FAFAFA', overflow: 'hidden' },
-    picker: { height: 44, color: '#1a1a1a' },
-    button: { backgroundColor: '#F4A261', padding: 13, borderRadius: 30, alignItems: 'center', marginTop: 14, shadowColor: '#F4A261', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 8, elevation: 6 },
+    picker: { height: 44 },
+    button: { backgroundColor: '#F4A261', padding: 13, borderRadius: 30, alignItems: 'center', marginTop: 14 },
     buttonDisabled: { opacity: 0.4 },
     buttonText: { color: '#fff', fontWeight: '800', fontSize: 14 },
     link: { textAlign: 'center', marginTop: 10, color: '#aaa', fontSize: 12 },
