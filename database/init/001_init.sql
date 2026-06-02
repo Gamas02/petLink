@@ -117,3 +117,26 @@ CREATE TABLE IF NOT EXISTS Notificacao (
   CONSTRAINT fk_notif_denuncia FOREIGN KEY (id_denuncia) REFERENCES Denuncia (id)ON DELETE SET NULL ON UPDATE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Adm para testes
+INSERT INTO Usuario (
+  usuario,
+  email,
+  senha_hash,
+  telefone,
+  cpf,
+  cidade,
+  estado,
+  is_admin,
+  ativo
+) VALUES (
+  'admin',
+  'admin@petcare.com',
+  '$2b$12$SEU_HASH_BCRYPT_AQUI',
+  '(17)99999-9999',
+  '000.000.000-00',
+  'São José do Rio Preto',
+  'SP',
+  1,
+  1
+);
