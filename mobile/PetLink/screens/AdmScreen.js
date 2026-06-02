@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, TextInput,
     TouchableOpacity, ScrollView, Alert,
+    Modal,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { TopWave, BottomWave } from '../components/waves';
@@ -27,6 +28,8 @@ export default function AdmScreen({ navigation }) {
     const [descricao, setDescricao] = useState('');
     const [tags, setTags] = useState(''); // string para digitar tags separadas por vírgula
     const [mensagem, setMensagem] = useState('');
+
+    const [modalTipo, setModalTipo] = useState(false);
 
     // Máscaras (mantidas iguais)
     const mascaraCNPJ = (t) =>
@@ -125,78 +128,97 @@ export default function AdmScreen({ navigation }) {
 
                     {/* Nome */}
                     <Text style={s.label}>Nome da ONG / Canil *</Text>
-                    <TextInput style={s.input} placeholder="Nome completo" value={nome} onChangeText={setNome} />
+                    <TextInput style={s.input} placeholder="Ex: Lar dos filhotes" placeholderTextColor={"gray"} value={nome} onChangeText={setNome} />
 
                     {/* Email */}
                     <Text style={s.label}>E-mail *</Text>
-                    <TextInput style={s.input} keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+                    <TextInput style={s.input} placeholder="exemplo@ex.com" placeholderTextColor={"gray"} keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
 
                     {/* CNPJ + Telefone */}
                     <View style={s.row}>
                         <View style={s.colHalf}>
                             <Text style={s.label}>CNPJ *</Text>
-                            <TextInput style={s.input} keyboardType="numeric" value={cnpj} onChangeText={t => setCnpj(mascaraCNPJ(t))} />
+                            <TextInput style={s.input} placeholder="00.000.000/0000-00" placeholderTextColor={"gray"} keyboardType="numeric" value={cnpj} onChangeText={t => setCnpj(mascaraCNPJ(t))} />
                         </View>
                         <View style={s.colHalf}>
                             <Text style={s.label}>Telefone</Text>
-                            <TextInput style={s.input} keyboardType="phone-pad" value={telefone} onChangeText={t => setTelefone(mascaraTelefone(t))} />
+                            <TextInput style={s.input} placeholder="(00) 00000-0000" placeholderTextColor={"gray"} keyboardType="phone-pad" value={telefone} onChangeText={t => setTelefone(mascaraTelefone(t))} />
                         </View>
                     </View>
 
                     {/* Tipo */}
                     <Text style={s.label}>Tipo *</Text>
-                    <View style={s.pickerWrap}>
-                        <Picker selectedValue={tipo} onValueChange={setTipo}>
-                            <Picker.Item label="Selecione..." value="" />
-                            <Picker.Item label="ONG" value="ong" />
-                            <Picker.Item label="Canil" value="canil" />
-                        </Picker>
-                    </View>
+                    <TouchableOpacity
+                        style={[s.input, s.pickerWrap]}
+                        onPress={() => setModalTipo(true)}
+                        activeOpacity={0.7}
+                    >
+                        <Text style={tipo ? s.pickerText : s.pickerPlaceholder}>
+                            {tipo === 'ong' ? 'ONG' : tipo === 'canil' ? 'Canil' : 'Selecione...'}
+                        </Text>
+                        <Text style={s.pickerArrow}>›</Text>
+                    </TouchableOpacity>
+
+                    <Modal visible={modalTipo} transparent animationType="fade">
+                        <TouchableOpacity style={s.modalOverlay} onPress={() => setModalTipo(false)}>
+                            <View style={s.modalBox}>
+                                <Text style={s.modalTitle}>Tipo</Text>
+                                {[{ label: 'ONG', value: 'ong' }, { label: 'Canil', value: 'canil' }].map(op => (
+                                    <TouchableOpacity
+                                        key={op.value}
+                                        style={[s.modalOption, tipo === op.value && s.modalOptionActive]}
+                                        onPress={() => { setTipo(op.value); setModalTipo(false); }}
+                                    >
+                                        <Text style={[s.modalOptionText, tipo === op.value && s.modalOptionTextActive]}>
+                                            {op.label}
+                                        </Text>
+                                        {tipo === op.value && <Text style={s.modalCheck}>✓</Text>}
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </TouchableOpacity>
+                    </Modal>
 
                     {/* Código de registro (opcional) */}
                     <Text style={s.label}>Código de registro <Text style={s.opcional}>(opcional)</Text></Text>
-                    <TextInput style={s.input} placeholder="Ex: CRMV-SP 12345" value={codigo_registro} onChangeText={setCodigoRegistro} />
+                    <TextInput style={s.input} placeholder="Ex: CRMV-SP 12345" placeholderTextColor={"gray"} value={codigo_registro} onChangeText={setCodigoRegistro} />
 
                     {/* Endereço (novo campo obrigatório) */}
                     <Text style={s.label}>Endereço (Rua, número, bairro) *</Text>
-                    <TextInput style={s.input} placeholder="Rua Exemplo, 123, Centro" value={endereco} onChangeText={setEndereco} />
+                    <TextInput style={s.input} placeholder="Rua Exemplo, 123, Centro" placeholderTextColor={"gray"} value={endereco} onChangeText={setEndereco} />
 
                     {/* Cidade + Estado */}
                     <View style={s.row}>
                         <View style={s.colEstado}>
                             <Text style={s.label}>Estado *</Text>
-                            <TextInput style={s.input} placeholder="SP" maxLength={2} value={estado} onChangeText={t => setEstado(t.toUpperCase().replace(/[^A-Z]/g, ''))} />
+                            <TextInput style={s.input} placeholder="SP" placeholderTextColor={"gray"} maxLength={2} value={estado} onChangeText={t => setEstado(t.toUpperCase().replace(/[^A-Z]/g, ''))} />
                         </View>
                         <View style={s.colCidade}>
                             <Text style={s.label}>Cidade *</Text>
-                            <TextInput style={s.input} placeholder="Cidade" value={cidade} onChangeText={setCidade} />
+                            <TextInput style={s.input} placeholder="Cidade" placeholderTextColor={"gray"} value={cidade} onChangeText={setCidade} />
                         </View>
                     </View>
 
                     {/* Tags (opcional, separadas por vírgula) */}
                     <Text style={s.label}>Tags (separadas por vírgula)</Text>
-                    <TextInput style={s.input} placeholder="Ex: Cães, Gatos, Aves" value={tags} onChangeText={setTags} />
+                    <TextInput style={s.input} placeholder="Ex: Cães, Gatos, Aves" placeholderTextColor={"gray"} value={tags} onChangeText={setTags} />
 
                     {/* Descrição */}
                     <Text style={s.label}>Descrição da instituição</Text>
-                    <TextInput style={[s.input, { height: 80, textAlignVertical: 'top' }]} placeholder="Fale sobre o trabalho..." multiline value={descricao} onChangeText={setDescricao} />
+                    <TextInput style={[s.input, { height: 80, textAlignVertical: 'top' }]} placeholder="Fale sobre o trabalho..." placeholderTextColor={"gray"} multiline value={descricao} onChangeText={setDescricao} />
 
                     {/* Senha */}
                     <Text style={s.label}>Senha *</Text>
                     <View style={s.inputWrap}>
                         <TextInput style={s.input} secureTextEntry={!mostrarSenha} value={senha} onChangeText={setSenha} />
-                        <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarSenha(v => !v)}>
-                            <Text>{mostrarSenha ? '🙈' : '👁️'}</Text>
-                        </TouchableOpacity>
+                        <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarSenha(v => !v)} />
                     </View>
 
                     {/* Confirmar senha */}
                     <Text style={s.label}>Confirmar Senha *</Text>
                     <View style={s.inputWrap}>
                         <TextInput style={s.input} secureTextEntry={!mostrarConfirmar} value={confirmarSenha} onChangeText={setConfirmarSenha} />
-                        <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarConfirmar(v => !v)}>
-                            <Text>{mostrarConfirmar ? '🙈' : '👁️'}</Text>
-                        </TouchableOpacity>
+                        <TouchableOpacity style={s.eyeBtn} onPress={() => setMostrarConfirmar(v => !v)} />
                     </View>
 
                     {mensagem ? (
@@ -214,143 +236,207 @@ export default function AdmScreen({ navigation }) {
     );
 }
 
-// Estilos melhorados e mais bonitos
 const s = StyleSheet.create({
-    screen: { 
-        flex: 1, 
-        backgroundColor: '#F8F9FF'  // Fundo mais suave
+    screen: {
+        flex: 1,
+        backgroundColor: '#F5F4F0',
     },
-    scroll: { 
-        flexGrow: 1, 
-        paddingHorizontal: 20, 
-        paddingTop: 40, 
-        paddingBottom: 40 
+    scroll: {
+        flexGrow: 1,
+        paddingHorizontal: 18,
+        paddingTop: 32,
+        paddingBottom: 32,
     },
-    card: { 
-        backgroundColor: '#FFFFFF', 
-        borderRadius: 32,  // Mais arredondado
-        padding: 24, 
-        shadowColor: '#000', 
-        shadowOffset: { width: 0, height: 10 }, 
-        shadowOpacity: 0.08, 
-        shadowRadius: 24, 
-        elevation: 12,
-        borderWidth: 1,
-        borderColor: '#F0F0F0'
-    },
-    title: { 
-        fontSize: 28,  // Maior
-        fontWeight: '800', 
-        textAlign: 'center', 
-        marginBottom: 24, 
-        color: '#1A1A2E',
-        letterSpacing: -0.5
-    },
-    label: { 
-        fontSize: 12, 
-        fontWeight: '600', 
-        color: '#6B7280', 
-        marginTop: 16, 
-        marginBottom: 8,
-        letterSpacing: 0.5,
-        textTransform: 'uppercase'
-    },
-    opcional: { 
-        fontWeight: '400',
-        color: '#9CA3AF',
-        textTransform: 'none'
-    },
-    input: { 
-        borderWidth: 1.5, 
-        borderColor: '#E5E7EB', 
-        borderRadius: 14, 
-        paddingHorizontal: 16,
-        paddingVertical: 12, 
-        fontSize: 15, 
-        backgroundColor: '#F8F9FC',
-        color: '#1F2937'
-    },
-    row: { 
-        flexDirection: 'row', 
-        gap: 12 
-    },
-    colHalf: { 
-        flex: 1 
-    },
-    colEstado: { 
-        width: 80 
-    },
-    colCidade: { 
-        flex: 1 
-    },
-    inputWrap: { 
-        position: 'relative' 
-    },
-    eyeBtn: { 
-        position: 'absolute', 
-        right: 14, 
-        top: 12,
-        padding: 4,
-        zIndex: 1
-    },
-    pickerWrap: { 
-        borderWidth: 1.5, 
-        borderColor: '#E5E7EB', 
-        borderRadius: 14, 
-        backgroundColor: '#F8F9FC', 
-        overflow: 'hidden',
-        marginBottom: 4
-    },
-    button: { 
-        backgroundColor: '#F4A261', 
-        paddingVertical: 16, 
-        borderRadius: 40, 
-        alignItems: 'center', 
-        marginTop: 24,
-        shadowColor: '#F4A261',
+    card: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        padding: 20,
+        shadowColor: '#1A1A2E',
         shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.25,
-        shadowRadius: 12,
-        elevation: 6
+        shadowOpacity: 0.06,
+        shadowRadius: 16,
+        elevation: 8,
+        borderWidth: 1,
+        borderColor: '#EEECEB',
     },
-    buttonDisabled: { 
-        opacity: 0.5,
-        shadowOpacity: 0,
-        backgroundColor: '#D1D5DB'
+    title: {
+        fontSize: 22,
+        fontWeight: '800',
+        textAlign: 'center',
+        marginBottom: 20,
+        color: '#1A1A2E',
+        letterSpacing: -0.5,
     },
-    buttonText: { 
-        color: '#FFFFFF', 
-        fontWeight: '700', 
-        fontSize: 16,
-        letterSpacing: 0.5
+    label: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#9CA3AF',
+        marginTop: 12,
+        marginBottom: 6,
+        letterSpacing: 0.4,
+        textTransform: 'uppercase',
     },
-    link: { 
-        textAlign: 'center', 
-        marginTop: 20, 
-        color: '#6B7280', 
-        fontSize: 14,
-        fontWeight: '500'
+    opcional: {
+        fontWeight: '400',
+        color: '#C4C9D4',
+        textTransform: 'none',
+        fontSize: 11,
     },
-    linkBold: { 
-        color: '#F4A261', 
-        fontWeight: '700' 
-    },
-    msg: { 
-        marginTop: 16,
-        marginBottom: 8,
-        textAlign: 'center', 
-        fontWeight: '600', 
-        fontSize: 13,
+    input: {
+        borderWidth: 1,
+        borderColor: '#E9EAF0',
+        borderRadius: 12,
+        paddingHorizontal: 14,
         paddingVertical: 10,
-        paddingHorizontal: 16,
-        borderRadius: 12
+        fontSize: 14,
+        backgroundColor: '#FAFAFA',
+        color: '#1F2937',
     },
-    success: { 
+    row: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    colHalf: {
+        flex: 1,
+    },
+    colEstado: {
+        width: 72,
+    },
+    colCidade: {
+        flex: 1,
+    },
+    inputWrap: {
+        position: 'relative',
+    },
+    eyeBtn: {
+        position: 'absolute',
+        right: 12,
+        top: 10,
+        padding: 4,
+        zIndex: 1,
+    },
+    pickerWrap: {
+        borderWidth: 1,
+        borderColor: '#E9EAF0',
+        borderRadius: 12,
+        backgroundColor: '#FAFAFA',
+        overflow: 'hidden',
+        marginBottom: 2,
+    },
+    button: {
+        backgroundColor: '#F4A261',
+        paddingVertical: 14,
+        borderRadius: 40,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    buttonDisabled: {
+        opacity: 0.45,
+        backgroundColor: '#D1D5DB',
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontWeight: '700',
+        fontSize: 15,
+        letterSpacing: 0.4,
+    },
+    link: {
+        textAlign: 'center',
+        marginTop: 16,
+        color: '#9CA3AF',
+        fontSize: 13,
+        fontWeight: '500',
+    },
+    linkBold: {
+        color: '#F4A261',
+        fontWeight: '700',
+    },
+    msg: {
+        marginTop: 14,
+        marginBottom: 6,
+        textAlign: 'center',
+        fontWeight: '600',
+        fontSize: 12,
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        borderRadius: 10,
+    },
+    success: {
         color: '#059669',
-        backgroundColor: '#ECFDF5'
+        backgroundColor: '#ECFDF5',
     },
-    error: { 
+    error: {
         color: '#DC2626',
-        backgroundColor: '#FEF2F2'
+        backgroundColor: '#FEF2F2',
+    },
+    pickerWrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    pickerText: {
+        fontSize: 14,
+        color: '#1F2937',
+    },
+    pickerPlaceholder: {
+        fontSize: 14,
+        color: '#C4C9D4',
+    },
+    pickerArrow: {
+        fontSize: 20,
+        color: '#9CA3AF',
+        lineHeight: 22,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.35)',
+        justifyContent: 'center',
+        paddingHorizontal: 32,
+    },
+    modalBox: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.12,
+        shadowRadius: 24,
+        elevation: 12,
+    },
+    modalTitle: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: '#9CA3AF',
+        letterSpacing: 0.8,
+        textTransform: 'uppercase',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+    },
+    modalOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        borderRadius: 12,
+    },
+    modalOptionActive: {
+        backgroundColor: '#FFF5EE',
+    },
+    modalOptionText: {
+        fontSize: 15,
+        color: '#1F2937',
+        fontWeight: '500',
+    },
+    modalOptionTextActive: {
+        color: '#F4A261',
+        fontWeight: '700',
+    },
+    modalCheck: {
+        color: '#F4A261',
+        fontSize: 16,
+        fontWeight: '700',
     },
 });
