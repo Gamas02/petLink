@@ -132,7 +132,7 @@ INSERT INTO Usuario (
 ) VALUES (
   'admin',
   'admin@petcare.com',
-  '$2b$12$SEU_HASH_BCRYPT_AQUI',
+  'scrypt:32768:8:1$dzCXNwu1XwYo8yXf$d05f4d1055205e1a3b67b9f8f3d65d492124690b711d13fc3a282687b5b3aca2928ac955d74620adc8a8985708626951679180d092cce11f1d583ef1292af056',
   '(17)99999-9999',
   '000.000.000-00',
   'São José do Rio Preto',
