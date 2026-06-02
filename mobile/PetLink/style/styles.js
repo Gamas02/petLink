@@ -83,262 +83,132 @@ export const homeStyles = StyleSheet.create({
 export const registerStyles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFC300',
-    },
-    gradient: {
-        flex: 1,
+        backgroundColor: '#F8F9FF',
     },
     scrollContent: {
         flexGrow: 1,
-        paddingHorizontal: 16,
-        paddingTop: 20,
-        paddingBottom: 30,
-        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 40,
+        paddingBottom: 40,
     },
- 
-    // ─── Card ───────────────────────────────────────────────
     card: {
         width: '100%',
-        maxWidth: 400,
         backgroundColor: '#FFFFFF',
-        padding: 28,
         borderRadius: 32,
-        shadowColor: '#B45A00',
-        shadowOffset: { width: 0, height: 20 },
-        shadowOpacity: 0.22,
-        shadowRadius: 40,
-        elevation: 14,
+        padding: 24,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+        elevation: 12,
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
     },
- 
-    // ─── Logo ring ──────────────────────────────────────────
-    logoRing: {
-        width: 54,
-        height: 54,
-        borderRadius: 27,
-        backgroundColor: '#FF8C00',   // substitua por LinearGradient se quiser
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        marginBottom: 14,
-        shadowColor: '#FF8C00',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.35,
-        shadowRadius: 14,
-        elevation: 8,
-    },
-    logoIcon: {
-        fontSize: 24,
-        color: '#FFFFFF',
-    },
- 
-    // ─── Cabeçalho ──────────────────────────────────────────
     title: {
-        fontSize: 26,
-        fontWeight: '900',
-        textAlign: 'center',
-        color: '#1A1A1A',
-        letterSpacing: -0.5,
-        marginBottom: 4,
-    },
-    subtitle: {
-        textAlign: 'center',
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#999999',
-        letterSpacing: 0.2,
-        marginBottom: 18,
-    },
- 
-    // ─── Badges ─────────────────────────────────────────────
-    badgeRow: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 6,
-        marginBottom: 18,
-    },
-    badge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-        backgroundColor: '#FFF3E0',
-        borderRadius: 20,
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-    },
-    badgeText: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: '#E65100',
-    },
- 
-    // ─── Seções ─────────────────────────────────────────────
-    sectionLabel: {
-        fontSize: 10,
+        fontSize: 28,
         fontWeight: '800',
-        letterSpacing: 1.2,
-        textTransform: 'uppercase',
-        color: '#FF8C00',
-        marginBottom: 10,
-        marginTop: 16,
-        paddingLeft: 2,
+        textAlign: 'center',
+        marginBottom: 28,
+        color: '#1A1A2E',
+        letterSpacing: -0.5,
     },
-    divider: {
-        height: 1,
-        backgroundColor: '#FFE0B2',
-        marginVertical: 16,
-    },
- 
-    // ─── Inputs ─────────────────────────────────────────────
     inputWrapper: {
-        marginBottom: 10,
+        marginBottom: 16,
     },
     label: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: '#888888',
-        letterSpacing: 0.6,
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#6B7280',
+        marginBottom: 8,
+        letterSpacing: 0.5,
         textTransform: 'uppercase',
-        marginBottom: 5,
-        paddingLeft: 2,
-    },
-    inputWrap: {
-        position: 'relative',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    inputIcon: {
-        position: 'absolute',
-        left: 13,
-        zIndex: 1,
-        fontSize: 17,
-        color: '#FFAB40',
     },
     input: {
-        flex: 1,
-        backgroundColor: '#FFF9F0',
+        backgroundColor: '#F8F9FC',
         borderWidth: 1.5,
-        borderColor: '#FFE0B2',
-        borderRadius: 13,
-        paddingHorizontal: 12,
-        paddingLeft: 38,           // espaço para o ícone
-        paddingVertical: 10,
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1A1A1A',
+        borderColor: '#E5E7EB',
+        borderRadius: 14,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        fontSize: 15,
+        color: '#1F2937',
     },
-    inputFocused: {
-        borderColor: '#FF8C00',
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#FF8C00',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.12,
-        shadowRadius: 6,
-        elevation: 2,
-    },
- 
-    // ─── Input sem ícone (CPF, Estado, etc.) ────────────────
-    inputNoIcon: {
-        flex: 1,
-        backgroundColor: '#FFF9F0',
-        borderWidth: 1.5,
-        borderColor: '#FFE0B2',
-        borderRadius: 13,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1A1A1A',
-    },
- 
-    // ─── Linha dupla (CPF + Telefone / Estado + Cidade) ─────
     row: {
         flexDirection: 'row',
-        gap: 8,
-        marginBottom: 10,
+        gap: 12,
+        marginBottom: 16,
     },
-    colCPF: {
-        flex: 1.4,
-    },
-    colPhone: {
+    colHalf: {
         flex: 1,
     },
     colEstado: {
-        width: 64,
+        width: 80,
     },
     colCidade: {
         flex: 1,
     },
- 
-    // ─── Senha ──────────────────────────────────────────────
     passwordContainer: {
-        marginBottom: 10,
+        marginBottom: 16,
+    },
+    inputWrap: {
+        position: 'relative',
     },
     eyeBtn: {
         position: 'absolute',
         right: 12,
+        top: 10,  // Ajuste esse valor conforme necessário
         padding: 4,
         zIndex: 1,
     },
-    eyeIcon: {
-        fontSize: 18,
-        color: '#FFAB40',
+    eyeText: {
+        fontSize: 16,  // Ajuste o tamanho
+        color: '#666',
     },
- 
-    // ─── Botão ──────────────────────────────────────────────
     button: {
-        backgroundColor: '#FF8C00',   // use LinearGradient para o efeito laranja→amarelo
-        paddingVertical: 14,
-        borderRadius: 50,
+        backgroundColor: '#F4A261',
+        paddingVertical: 16,
+        borderRadius: 40,
         alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        gap: 8,
-        marginTop: 18,
-        marginBottom: 8,
-        shadowColor: '#FF8C00',
+        marginTop: 16,
+        shadowColor: '#F4A261',
         shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.38,
-        shadowRadius: 16,
-        elevation: 8,
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
+        elevation: 6,
     },
     buttonDisabled: {
-        backgroundColor: '#D1D5DB',
+        opacity: 0.5,
         shadowOpacity: 0,
-        elevation: 0,
-        opacity: 0.6,
+        backgroundColor: '#D1D5DB',
     },
     buttonText: {
         color: '#FFFFFF',
-        fontWeight: '800',
-        fontSize: 15,
-        letterSpacing: 0.4,
+        fontWeight: '700',
+        fontSize: 16,
+        letterSpacing: 0.5,
     },
- 
-    // ─── Link de login ───────────────────────────────────────
     linkContainer: {
-        marginTop: 16,
+        marginTop: 20,
         alignItems: 'center',
     },
     link: {
-        color: '#AAAAAA',
-        fontSize: 13,
-        fontWeight: '600',
+        color: '#6B7280',
+        fontSize: 14,
+        fontWeight: '500',
     },
     linkBold: {
-        color: '#FF8C00',
-        fontWeight: '800',
+        color: '#F4A261',
+        fontWeight: '700',
     },
- 
-    // ─── Mensagens de status ─────────────────────────────────
     msg: {
-        marginTop: 12,
-        marginBottom: 4,
+        marginTop: 16,
+        marginBottom: 8,
         textAlign: 'center',
         fontWeight: '600',
-        fontSize: 12,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 10,
+        fontSize: 13,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 12,
     },
     success: {
         color: '#059669',

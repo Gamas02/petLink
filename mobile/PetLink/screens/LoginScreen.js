@@ -3,15 +3,9 @@ import React, { useState } from 'react';
 import {
     View,
     Text,
-    StyleSheet,
     TextInput,
     TouchableOpacity,
-    StatusBar,
-    Dimensions,
-    ScrollView,
 } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-
 
 import { loginStyles as styles } from '../style/styles';
 import { TopWave, BottomWave } from '../components/waves';
@@ -21,6 +15,7 @@ export default function LoginScreen({ navigation }) {
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
     const [mensagem, setMensagem] = useState('');
+    const [carregando, setCarregando] = useState(false);
 
     const handleLogin = async () => {
         if (!usuario.trim() || !senha) {
@@ -28,9 +23,10 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
-        try {
-            setMensagem("Entrando...");
+        setCarregando(true);
+        setMensagem('');
 
+        try {
             const response = await fetch("http://localhost:5000/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -38,24 +34,38 @@ export default function LoginScreen({ navigation }) {
             });
 
             let data = {};
-
             try {
                 data = await response.json();
-            } catch { }
+            } catch {
+                setMensagem("Resposta inválida do servidor ❌");
+                return;
+            }
 
-            if (response.ok && response.is_admin == 0) {;
-                setMensagem("Login realizado com sucesso ✅");
-                navigation.navigate('App')
-            }
-            if (response.ok && response.is_admin == 1){
-                navigation.navigate('')
+            if (response.ok) {
+                // Flask retorna: { resposta: "ok", is_admin: 0 ou 1, id, usuario, email }
+                const isAdmin = data.is_admin;
+
+                if (isAdmin == 1) {
+                    setMensagem("Login admin realizado com sucesso ✅");
+                    setTimeout(() => navigation.navigate('Adm'), 1500);
+                } else {
+                    setMensagem("Login realizado com sucesso ✅");
+                    setTimeout(() => navigation.navigate('App'), 1500);
+                }
             } else {
-                setMensagem(data.message || "Erro no login ❌");
+                // Flask retorna "message" em 404, "resposta" em 401, "erro" em 400/500
+                const msg = data.message || data.resposta || data.erro || "Erro no login ❌";
+                setMensagem(msg);
             }
+
         } catch (error) {
             setMensagem("Erro de conexão 🌐");
+        } finally {
+            setCarregando(false);
         }
     };
+
+    const sucesso = mensagem.includes("sucesso");
 
     return (
         <View style={styles.container}>
@@ -68,29 +78,37 @@ export default function LoginScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="Usuário"
+                    placeholderTextColor="#9CA3AF"
                     value={usuario}
+                    editable={!carregando}
                     onChangeText={(text) => { setUsuario(text.trimStart()); setMensagem(""); }}
                 />
 
                 <TextInput
                     style={styles.input}
                     placeholder="Senha"
+                    placeholderTextColor="#9CA3AF"
                     secureTextEntry
                     value={senha}
+                    editable={!carregando}
                     onChangeText={(text) => { setSenha(text); setMensagem(""); }}
                 />
 
                 <TouchableOpacity
-                    style={[styles.button, (!usuario || !senha) && styles.buttonDisabled]}
-                    disabled={!usuario || !senha}
-                    onPress={() => handleLogin()}
+                    style={[styles.button, (!usuario || !senha || carregando) && styles.buttonDisabled]}
+                    disabled={!usuario || !senha || carregando}
+                    onPress={handleLogin}
                 >
-                    <Text style={styles.buttonText}>Entrar</Text>
+                    <Text style={styles.buttonText}>
+                        {carregando ? "Entrando..." : "Entrar"}
+                    </Text>
                 </TouchableOpacity>
 
-                <Text style={[styles.msg, mensagem.includes("sucesso") ? styles.success : styles.error]}>
-                    {mensagem}
-                </Text>
+                {mensagem ? (
+                    <Text style={[styles.msg, sucesso ? styles.success : styles.error]}>
+                        {mensagem}
+                    </Text>
+                ) : null}
 
                 <TouchableOpacity onPress={() => navigation.navigate('Registrar-se')}>
                     <Text style={styles.signup}>Não tem conta? Registre-se</Text>

@@ -14,9 +14,6 @@ import { registerStyles as styles } from '../style/styles';
 
 export default function RegisterScreen({ navigation }) {
 
-    const [mostrarSenha, setMostrarSenha] = useState(false);
-    const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
-
     const [usuario, setUsuario] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -194,38 +191,28 @@ export default function RegisterScreen({ navigation }) {
                         </View>
                     </View>
 
-                    <View style={styles.passwordContainer}>
+                    <View style={styles.inputWrapper}>
                         <Text style={styles.label}>Senha</Text>
-                        <View style={styles.inputWrap}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Mínimo 6 caracteres"
-                                placeholderTextColor="#9CA3AF"
-                                secureTextEntry={!mostrarSenha}
-                                value={senha}
-                                onChangeText={(t) => { setSenha(t); setMensagem(""); }}
-                            />
-                            <TouchableOpacity style={styles.eyeBtn} onPress={() => setMostrarSenha(v => !v)}>
-                                <Text style={styles.eyeText}>{mostrarSenha ? '👁️' : '👁️‍🗨️'}</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Mínimo 6 caracteres"
+                            placeholderTextColor="#9CA3AF"
+                            secureTextEntry={true}
+                            value={senha}
+                            onChangeText={(t) => { setSenha(t); setMensagem(""); }}
+                        />
                     </View>
 
-                    <View style={styles.passwordContainer}>
+                    <View style={styles.inputWrapper}>
                         <Text style={styles.label}>Confirmar Senha</Text>
-                        <View style={styles.inputWrap}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Repita a senha"
-                                placeholderTextColor="#9CA3AF"
-                                secureTextEntry={!mostrarConfirmar}
-                                value={confirmarSenha}
-                                onChangeText={(t) => { setConfirmarSenha(t); setMensagem(""); }}
-                            />
-                            <TouchableOpacity style={styles.eyeBtn} onPress={() => setMostrarConfirmar(v => !v)}>
-                                <Text style={styles.eyeText}>{mostrarConfirmar ? '👁️' : '👁️‍🗨️'}</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Repita a senha"
+                            placeholderTextColor="#9CA3AF"
+                            secureTextEntry={true}
+                            value={confirmarSenha}
+                            onChangeText={(t) => { setConfirmarSenha(t); setMensagem(""); }}
+                        />
                     </View>
 
                     {mensagem ? (

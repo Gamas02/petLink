@@ -124,18 +124,28 @@ def register_ong():
         return make_response('', 204)
 
     data = request.get_json()
-    usuario = data.get("usuario")
+    
+    # CORRIGIDO: usar 'nome' em vez de 'usuario'
+    nome = data.get("nome")  # ← mudado de usuario para nome
     senha = data.get("senha").encode('utf-8')
     email = data.get("email")
+    telefone = data.get("telefone")  # ← adicionado
     cnpj = data.get("cnpj")
     tipo = data.get("tipo")
     codigo_registro = data.get("codigo_registro")
     cidade = data.get("cidade")
     estado = data.get("estado")
+    endereco = data.get("endereco")  # ← adicionado
+    descricao = data.get("descricao")  # ← adicionado
+    tags = data.get("tags")  # ← opcional, pode ser salvo depois
     data_cadastro = datetime.now()
     
-    if not usuario or not senha or not email or not cnpj or not tipo or not codigo_registro or not cidade or not estado:
-        return jsonify({"erro": "Dados inválidos."}), 400
+    # Validação dos campos obrigatórios
+    if not nome or not senha or not email or not cnpj or not tipo or not cidade or not estado or not endereco:
+        return jsonify({
+            "success": False, 
+            "message": f"Dados inválidos. Faltando: nome={nome}, email={email}, cnpj={cnpj}, tipo={tipo}, cidade={cidade}, estado={estado}, endereco={endereco}"
+        }), 400
     
     conexao = conectar()
     cursor = conexao.cursor()
@@ -143,21 +153,25 @@ def register_ong():
     
     try:
         cursor.execute("""
-            INSERT INTO Empresa_Ong
-            (nome, senha_hash, email, cnpj, tipo, codigo_registro, cidade, estado, data_cadastro)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-            (usuario, senha_hash, email, cnpj, tipo, codigo_registro, cidade, estado, data_cadastro))
+            INSERT INTO Empresa_Ong 
+            (nome, senha_hash, email, telefone, cnpj, tipo, codigo_registro, cidade, estado, endereco, descricao, data_cadastro)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (nome, senha_hash, email, telefone, cnpj, tipo, codigo_registro, cidade, estado, endereco, descricao, data_cadastro))
         
         conexao.commit()  
         
         return jsonify({
-            "resposta": "ok",
+            "success": True,
+            "message": "ONG cadastrada com sucesso!",
             "id": cursor.lastrowid
         }), 200
     
     except Exception as e:
+        print(f"Erro: {e}")
+        conexao.rollback()
         return jsonify({
-            "resposta": "erro no servidor",
+            "success": False,
+            "message": "Erro ao cadastrar ONG",
             "erro": str(e)
         }), 500
         

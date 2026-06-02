@@ -65,7 +65,7 @@ export default function AdmScreen({ navigation }) {
         // Monta objeto para enviar ao backend (API)
         try {
             setMensagem("Enviando...");
-            const response = await fetch("http://10.0.2.2:5000/register-ong", {
+            const response = await fetch("http://localhost:5000/register-ong", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -208,39 +208,149 @@ export default function AdmScreen({ navigation }) {
                     <TouchableOpacity style={[s.button, camposObrigatorios && s.buttonDisabled]} disabled={camposObrigatorios} onPress={handleRegister}>
                         <Text style={s.buttonText}>Cadastrar</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={s.link}>Já tem conta? <Text style={s.linkBold}>Login</Text></Text>
-                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </View>
     );
 }
 
-// Estilos (mantidos iguais, apenas ajuste no scroll)
+// Estilos melhorados e mais bonitos
 const s = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: '#fff' },
-    scroll: { flexGrow: 1, justifyContent: 'center', paddingVertical: 40, paddingHorizontal: 20 },
-    card: { backgroundColor: '#fff', borderRadius: 20, padding: 18, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 6 },
-    title: { fontSize: 20, fontWeight: '900', textAlign: 'center', marginBottom: 10 },
-    label: { fontSize: 10, fontWeight: '700', color: '#888', marginTop: 8, marginBottom: 3 },
-    opcional: { fontWeight: '400' },
-    input: { borderWidth: 1.5, borderColor: '#ECECEC', borderRadius: 12, padding: 8, fontSize: 13, backgroundColor: '#FAFAFA' },
-    row: { flexDirection: 'row', gap: 10 },
-    colHalf: { flex: 1 },
-    colEstado: { width: 72 },
-    colCidade: { flex: 1 },
-    inputWrap: { position: 'relative' },
-    eyeBtn: { position: 'absolute', right: 10, top: 8 },
-    pickerWrap: { borderWidth: 1.5, borderColor: '#ECECEC', borderRadius: 12, backgroundColor: '#FAFAFA', overflow: 'hidden' },
-    picker: { height: 44 },
-    button: { backgroundColor: '#F4A261', padding: 13, borderRadius: 30, alignItems: 'center', marginTop: 14 },
-    buttonDisabled: { opacity: 0.4 },
-    buttonText: { color: '#fff', fontWeight: '800', fontSize: 14 },
-    link: { textAlign: 'center', marginTop: 10, color: '#aaa', fontSize: 12 },
-    linkBold: { color: '#F4A261', fontWeight: '700' },
-    msg: { marginTop: 8, textAlign: 'center', fontWeight: '600', fontSize: 12 },
-    success: { color: '#1D9E75' },
-    error: { color: '#D85A30' },
+    screen: { 
+        flex: 1, 
+        backgroundColor: '#F8F9FF'  // Fundo mais suave
+    },
+    scroll: { 
+        flexGrow: 1, 
+        paddingHorizontal: 20, 
+        paddingTop: 40, 
+        paddingBottom: 40 
+    },
+    card: { 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 32,  // Mais arredondado
+        padding: 24, 
+        shadowColor: '#000', 
+        shadowOffset: { width: 0, height: 10 }, 
+        shadowOpacity: 0.08, 
+        shadowRadius: 24, 
+        elevation: 12,
+        borderWidth: 1,
+        borderColor: '#F0F0F0'
+    },
+    title: { 
+        fontSize: 28,  // Maior
+        fontWeight: '800', 
+        textAlign: 'center', 
+        marginBottom: 24, 
+        color: '#1A1A2E',
+        letterSpacing: -0.5
+    },
+    label: { 
+        fontSize: 12, 
+        fontWeight: '600', 
+        color: '#6B7280', 
+        marginTop: 16, 
+        marginBottom: 8,
+        letterSpacing: 0.5,
+        textTransform: 'uppercase'
+    },
+    opcional: { 
+        fontWeight: '400',
+        color: '#9CA3AF',
+        textTransform: 'none'
+    },
+    input: { 
+        borderWidth: 1.5, 
+        borderColor: '#E5E7EB', 
+        borderRadius: 14, 
+        paddingHorizontal: 16,
+        paddingVertical: 12, 
+        fontSize: 15, 
+        backgroundColor: '#F8F9FC',
+        color: '#1F2937'
+    },
+    row: { 
+        flexDirection: 'row', 
+        gap: 12 
+    },
+    colHalf: { 
+        flex: 1 
+    },
+    colEstado: { 
+        width: 80 
+    },
+    colCidade: { 
+        flex: 1 
+    },
+    inputWrap: { 
+        position: 'relative' 
+    },
+    eyeBtn: { 
+        position: 'absolute', 
+        right: 14, 
+        top: 12,
+        padding: 4,
+        zIndex: 1
+    },
+    pickerWrap: { 
+        borderWidth: 1.5, 
+        borderColor: '#E5E7EB', 
+        borderRadius: 14, 
+        backgroundColor: '#F8F9FC', 
+        overflow: 'hidden',
+        marginBottom: 4
+    },
+    button: { 
+        backgroundColor: '#F4A261', 
+        paddingVertical: 16, 
+        borderRadius: 40, 
+        alignItems: 'center', 
+        marginTop: 24,
+        shadowColor: '#F4A261',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
+        elevation: 6
+    },
+    buttonDisabled: { 
+        opacity: 0.5,
+        shadowOpacity: 0,
+        backgroundColor: '#D1D5DB'
+    },
+    buttonText: { 
+        color: '#FFFFFF', 
+        fontWeight: '700', 
+        fontSize: 16,
+        letterSpacing: 0.5
+    },
+    link: { 
+        textAlign: 'center', 
+        marginTop: 20, 
+        color: '#6B7280', 
+        fontSize: 14,
+        fontWeight: '500'
+    },
+    linkBold: { 
+        color: '#F4A261', 
+        fontWeight: '700' 
+    },
+    msg: { 
+        marginTop: 16,
+        marginBottom: 8,
+        textAlign: 'center', 
+        fontWeight: '600', 
+        fontSize: 13,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 12
+    },
+    success: { 
+        color: '#059669',
+        backgroundColor: '#ECFDF5'
+    },
+    error: { 
+        color: '#DC2626',
+        backgroundColor: '#FEF2F2'
+    },
 });

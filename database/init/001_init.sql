@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --  2. Empresa_Ong
-CREATE TABLE IF NOT EXISTS Empresa_Ong (
+CREATE TABLE Empresa_Ong (
   id INT NOT NULL AUTO_INCREMENT,
   nome VARCHAR(150) NOT NULL,
   email VARCHAR(150) NOT NULL,
@@ -40,12 +40,14 @@ CREATE TABLE IF NOT EXISTS Empresa_Ong (
   codigo_registro VARCHAR(50) NULL,
   cidade VARCHAR(100) NULL,
   estado CHAR(2) NULL,
+  endereco TEXT NULL,
+  descricao TEXT NULL,
   data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   ativo TINYINT(1) NOT NULL DEFAULT 1,
 
   PRIMARY KEY (id),
-  CONSTRAINT uq_empresa_email UNIQUE (email),
-  CONSTRAINT uq_empresa_cnpj  UNIQUE (cnpj)
+  CONSTRAINT uq_empresa_email UNIQUE KEY (email),
+  CONSTRAINT uq_empresa_cnpj  UNIQUE KEY (cnpj)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
